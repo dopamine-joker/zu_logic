@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package proto;
+option go_package="./";
+
+service RpcLogicService {
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+}
+
+//LoginRequest 登陆请求
+message LoginRequest {
+  string Email = 1;
+  string Password = 2;
+}
+
+//LoginResponse 登陆响应
+message LoginResponse {
+  int32 Code = 1;
+  string AuthToken = 2;
+}
+
+//RegisterRequest 注册请求
+message RegisterRequest {
+  string Name = 1;
+  string Password = 2;
+}
+
+//RegisterResponse 注册响应
+message RegisterResponse {
+  int32 Code = 1;
+  string AuthToken = 2;
+}

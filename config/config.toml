@@ -1,0 +1,12 @@
+[redis]
+address = "127.0.0.1"
+port = 6379
+password = "doper"
+db = 0
+
+[mysql]
+address = "127.0.0.1"
+port = 3306
+userName = "root"
+password = "123456"
+dbName = "zuzuxia"
