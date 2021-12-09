@@ -10,3 +10,13 @@ port = 3306
 userName = "root"
 password = "123456"
 dbName = "zuzuxia"
+
+[etcd]
+host = ["10.252.78.4:49166", ":10.252.78.449168", "10.252.78.4:49170"]
+basePath = "zuzuxia_srv"
+serverPathLogic = "LogicRpc"
+timeout = 5
+
+[logicBase]
+rpcPort = [6900, 6901]
+rpcAddress = ["tcp@127.0.0.1:6900", "tcp@127.0.0.1:6901"]

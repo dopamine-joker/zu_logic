@@ -3,6 +3,8 @@ package misc
 type Config struct {
 	RedisCfg RedisConfig `mapstructure:"redis"`
 	MysqlCfg MysqlConfig `mapstructure:"mysql"`
+	EtcdCfg  EtcdConfig  `mapstructure:"etcd"`
+	Logic    LogicBase   `mapstructure:"logicBase"`
 }
 
 type RedisConfig struct {
@@ -18,4 +20,18 @@ type MysqlConfig struct {
 	UserName string `mapstructure:"userName"`
 	Password string `mapstructure:"password"`
 	DbName   string `mapstructure:"dbName"`
+}
+
+type EtcdConfig struct {
+	Host            []string `mapstructure:"host"`
+	BasePath        string   `mapstructure:"basePath"`
+	ServerPathLogic string   `mapstructure:"serverPathLogic"`
+	TimeOut         int      `mapstructure:"timeout"`
+}
+
+type LogicBase struct {
+	RpcAddress      []string `mapstructure:"rpcAddress"`
+	RpcPort         []int    `mapstructure:"rpcPort"`
+	BasePath        string   `mapstructure:"basePath"`
+	ServerPathLogic string   `mapstructure:"serverPathLogic"`
 }

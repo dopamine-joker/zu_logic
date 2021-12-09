@@ -1,11 +1,19 @@
 syntax = "proto3";
 
+option go_package="github.com/dopamine-joker/zu_logic/proto";
 package proto;
-option go_package="./";
 
 service RpcLogicService {
   rpc Login(LoginRequest) returns (LoginResponse);
+  rpc TokenLogin(TokenLoginRequest) returns (TokenLoginResponse);
   rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc CheckAuth(CheckAuthRequest) returns (CheckAuthResponse);
+}
+
+message User {
+  int32 Id = 1;
+  string Email = 2;
+  string Name = 3;
 }
 
 //LoginRequest 登陆请求
@@ -18,16 +26,41 @@ message LoginRequest {
 message LoginResponse {
   int32 Code = 1;
   string AuthToken = 2;
+  User User = 3;
+}
+
+//TokenLoginRequest token登陆请求
+message TokenLoginRequest {
+  string Token = 1;
+}
+
+//TokenLoginResponse token登陆响应
+message TokenLoginResponse {
+  int32 Code = 1;
+  string AuthToken = 2;
+  User User = 3;
 }
 
 //RegisterRequest 注册请求
 message RegisterRequest {
-  string Name = 1;
-  string Password = 2;
+  string Email = 1;
+  string Name = 2;
+  string Password = 3;
 }
 
 //RegisterResponse 注册响应
 message RegisterResponse {
   int32 Code = 1;
+}
+
+//CheckAuthRequest token认证请求
+message CheckAuthRequest {
+  string AuthToken = 1;
+}
+
+//CheckAuthResponse token认证响应
+message CheckAuthResponse {
+  int32 Code = 1;
   string AuthToken = 2;
+  User User = 3;
 }
