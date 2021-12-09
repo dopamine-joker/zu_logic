@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -42,25 +43,33 @@ func (r *RpcLogicServer) Login(ctx context.Context, request *proto.LoginRequest)
 		return response, errors.New("login err, user does not exist")
 	}
 
+	// 密码是否正确
+	if request.GetPassword() != user.Password {
+		return response, errors.New("password err")
+	}
+
 	// redis已有相关tokenkey,则删除
-	if _, err := db.RedisClient.Pipelined(ctx, func(pipeliner redis.Pipeliner) error {
-		prefix := misc.GetTokenKeyPrefix(user.Id)
-		for {
-			keys, cursor, err := pipeliner.Scan(ctx, 0, fmt.Sprintf("%s*", prefix), 20).Result()
-			if err != nil {
-				return err
-			}
-			for _, key := range keys {
-				pipeliner.Del(ctx, key)
-			}
-			if cursor == 0 {
-				break
+	prefix := misc.GetTokenKeyPrefix(user.Id)
+	var cursor uint64
+	for {
+		var keys []string
+		var err error
+		keys, cursor, err = db.RedisClient.Scan(ctx, cursor, fmt.Sprintf("%s*", prefix), 20).Result()
+		log.Println("keys", keys)
+		log.Println("cursor", cursor)
+		log.Println("err", err)
+		if err != nil {
+			return response, err
+		}
+		for _, key := range keys {
+			misc.Logger.Info("scan key", zap.String("key", key))
+			if _, err = db.RedisClient.Del(ctx, key).Result(); err != nil {
+				misc.Logger.Warn("del key err", zap.String("key", key))
 			}
 		}
-		return nil
-	}); err != nil {
-		misc.Logger.Error("login err, redis del token err", zap.Int32("userId", user.Id), zap.String("email", user.Email))
-		return response, err
+		if cursor == 0 {
+			break
+		}
 	}
 
 	// 生成新的token
@@ -178,5 +187,32 @@ func (r *RpcLogicServer) CheckAuth(ctx context.Context, request *proto.CheckAuth
 	response.Code = misc.CodeSuccess
 	response.AuthToken = tokenId
 	response.User = user
+	return response, nil
+}
+
+func (r *RpcLogicServer) Logout(ctx context.Context, request *proto.LogoutRequest) (*proto.LogoutResponse, error) {
+	response := &proto.LogoutResponse{
+		Code: misc.CodeFail,
+	}
+	tokenId := request.GetToken()
+	// 解析token是否有效
+	var err error
+	var num int64
+	// 查询redis的token是否存在(即过期，或根本就不存在)
+	if num, err = db.RedisClient.Exists(ctx, tokenId).Result(); err != nil {
+		misc.Logger.Error("logout redis exists err", zap.String("token", tokenId), zap.Error(err))
+		return response, err
+	}
+	// num=0说明token不存在
+	if num == 0 {
+		return response, errors.New("token not exists")
+	}
+
+	if _, err = db.RedisClient.Del(ctx, request.GetToken()).Result(); err != nil {
+		misc.Logger.Error("logout redis del err", zap.String("token", tokenId), zap.Error(err))
+		return response, err
+	}
+
+	response.Code = misc.CodeSuccess
 	return response, nil
 }

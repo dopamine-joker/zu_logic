@@ -28,7 +28,7 @@ func AddUser(ctx context.Context, email, name, password string) (userId int32, e
 	if oUser.Id > 0 {
 		return oUser.Id, errors.New("the user already exists")
 	}
-	if _, err = db.SqlDb.QueryContext(ctx, `insert into z_user values(id, email, name, password, create_time) 
+	if _, err = db.SqlDb.QueryContext(ctx, `insert into z_user(id, email, name, password, create_time) 
 values(null, ?, ?, ?, ?)`, email, name, password, time.Now()); err != nil {
 		return -1, err
 	}
@@ -38,12 +38,12 @@ values(null, ?, ?, ?, ?)`, email, name, password, time.Now()); err != nil {
 }
 
 //GetUserByEmail 根据email查找用户
-func GetUserByEmail(ctx context.Context, email string) *User {
-	var user *User
-	if err := db.SqlDb.GetContext(ctx, user,
+func GetUserByEmail(ctx context.Context, email string) User {
+	var user User
+	if err := db.SqlDb.GetContext(ctx, &user,
 		`select * from z_user where email = ?`, email); err != nil {
 		misc.Logger.Warn("GetUserByEmail err, no this user", zap.String("email", email))
-		return &User{}
+		return User{}
 	}
 	return user
 }

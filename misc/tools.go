@@ -15,12 +15,12 @@ const (
 
 //GenerateTokenKey 生成tokenKey
 func GenerateTokenKey(userId int32) string {
-	return fmt.Sprintf("%s_%d_%s", tokenPrefix, userId, uuid.New())
+	return fmt.Sprintf("%s%d_%s", tokenPrefix, userId, uuid.New())
 }
 
 //GetTokenKeyPrefix 删除相关用户token
 func GetTokenKeyPrefix(userId int32) string {
-	return fmt.Sprintf("%s_%d_", tokenPrefix, userId)
+	return fmt.Sprintf("%s%d_", tokenPrefix, userId)
 }
 
 // GetLocalIP 获取本机IP

@@ -7,6 +7,7 @@ service RpcLogicService {
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc TokenLogin(TokenLoginRequest) returns (TokenLoginResponse);
   rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
   rpc CheckAuth(CheckAuthRequest) returns (CheckAuthResponse);
 }
 
@@ -27,6 +28,16 @@ message LoginResponse {
   int32 Code = 1;
   string AuthToken = 2;
   User User = 3;
+}
+
+//LogoutRequest 登出请求
+message LogoutRequest {
+  string Token = 1;
+}
+
+//LogoutResponse 登出响应
+message LogoutResponse {
+  int32 Code = 1;
 }
 
 //TokenLoginRequest token登陆请求
