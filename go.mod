@@ -7,6 +7,7 @@ require (
 	github.com/go-basic/uuid v1.0.0
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/google/uuid v1.1.2
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/spf13/viper v1.9.0
 	go.etcd.io/etcd/client/v3 v3.5.1

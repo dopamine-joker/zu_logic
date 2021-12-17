@@ -9,12 +9,32 @@ service RpcLogicService {
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc Logout(LogoutRequest) returns (LogoutResponse);
   rpc CheckAuth(CheckAuthRequest) returns (CheckAuthResponse);
+  rpc UploadPic(UploadRequest) returns (UploadResponse);
 }
 
 message User {
   int32 Id = 1;
   string Email = 2;
   string Name = 3;
+}
+
+message UploadRequest {
+  int32 Uid = 1;
+  string Name = 2;
+  string Price = 3;
+  string detail = 4;
+  repeated PicStream picList = 5;
+}
+
+message PicStream {
+  string name = 1;    //图片名字
+  bytes Content = 2;
+}
+
+//UploadPicResponse 上传文件响应
+message UploadResponse {
+  int32 Code = 1;
+  int32 GoodId = 2;
 }
 
 //LoginRequest 登陆请求
