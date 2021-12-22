@@ -12,6 +12,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -215,9 +216,39 @@ func (r *RpcLogicServer) Logout(ctx context.Context, request *proto.LogoutReques
 }
 
 const (
-	filePathPrefix = "./upload/"
-	fileNamePrefix = "pic_"
+	fileNamePrefix  = "pic_"
+	coverNamePrefix = "cover_"
+	tmpFilePrePath  = "./upload/"
 )
+
+//writePic 根据路径保存图片到本地
+func writePic(ctx context.Context, file *proto.PicStream, namePrefix string) (string, error) {
+	//得到图片的类型,png,jpg,jpeg等
+	fileType := strings.Split(file.GetName(), ".")[1]
+	name := fmt.Sprintf("%s.%s", uuid.New().String(), fileType)
+	//根据路径名创建一个临时文件
+	tmpFile, err := os.CreateTemp(tmpFilePrePath, fmt.Sprintf("%s*_%s", namePrefix, name))
+	defer func() {
+		_ = tmpFile.Close()
+		_ = os.Remove(tmpFile.Name())
+	}()
+	if err != nil {
+		return "", err
+	}
+	//内容写到临时文件里
+	if _, err = tmpFile.Write(file.Content); err != nil {
+		return "", err
+	}
+
+	//临时文件上传cos
+	res, _, err := misc.CosClient.Object.Upload(ctx, name, tmpFile.Name(), nil)
+	if err != nil {
+		misc.Logger.Error("cos upload err", zap.Error(err))
+		return "", err
+	}
+
+	return res.Location, nil
+}
 
 //UploadPic 上传图片到logic
 func (r *RpcLogicServer) UploadPic(ctx context.Context, req *proto.UploadRequest) (*proto.UploadResponse, error) {
@@ -225,25 +256,23 @@ func (r *RpcLogicServer) UploadPic(ctx context.Context, req *proto.UploadRequest
 		Code: misc.CodeFail,
 	}
 
-	//写图片到本地
-	var filePathList []string
+	//写图片到cos，并把url保存起来
+	var fileUrlList []string
 	for _, file := range req.PicList {
-		//得到图片的类型,png,jpg,jpeg等
-		fileType := strings.Split(file.GetName(), ".")[1]
-		name := fmt.Sprintf("%s%s%s.%s", filePathPrefix, fileNamePrefix, uuid.New().String(), fileType)
-		//记录生成的图片路径名,用于后续访问
-		//TODO: 可上传cos
-		filePathList = append(filePathList, name)
-		//根据路径名创建一个文件
-		out, err := os.Create(name)
+		path, err := writePic(ctx, file, fileNamePrefix)
 		if err != nil {
 			return response, err
 		}
-		//文件数据流写入本地文件
-		if _, err = out.Write(file.GetContent()); err != nil {
-			return response, err
-		}
+		fileUrlList = append(fileUrlList, path)
 	}
+
+	//提取封面图片
+	coverPath, err := writePic(ctx, req.Cover, coverNamePrefix)
+	if err != nil {
+		return response, err
+	}
+
+	log.Println(coverPath)
 
 	uid := req.Uid
 	name := req.Name
@@ -253,13 +282,8 @@ func (r *RpcLogicServer) UploadPic(ctx context.Context, req *proto.UploadRequest
 	}
 	detail := req.Detail
 
-	fmt.Println(uid)
-	fmt.Println(name)
-	fmt.Println(price)
-	fmt.Println(detail)
-
 	//数据写数据库,包括物品信息,图片等
-	goodsId, err := dao.AddGoods(ctx, name, detail, price, uid, filePathList)
+	goodsId, err := dao.AddGoods(ctx, name, detail, price, uid, coverPath, fileUrlList)
 	if err != nil {
 		return response, err
 	}
@@ -268,5 +292,36 @@ func (r *RpcLogicServer) UploadPic(ctx context.Context, req *proto.UploadRequest
 
 	response.Code = misc.CodeSuccess
 	response.GoodId = goodsId
+	return response, nil
+}
+
+func (r *RpcLogicServer) GetGoods(ctx context.Context, req *proto.GetGoodsRequest) (*proto.GetGoodsResponse, error) {
+	response := &proto.GetGoodsResponse{
+		Code: misc.CodeFail,
+	}
+
+	page := req.GetPage()
+	count := req.GetCount()
+
+	goodsList, err := dao.GetGoods(ctx, page, count)
+	if err != nil {
+		return response, err
+	}
+
+	var protoList []*proto.Goods
+
+	for _, goods := range goodsList {
+		//增加到请求的商品列表
+		protoList = append(protoList, &proto.Goods{
+			Id:    goods.Id,
+			Name:  goods.Name,
+			Uname: goods.Uname,
+			Price: strconv.FormatFloat(goods.Price, 'f', 2, 32),
+			Cover: goods.Cover,
+		})
+	}
+
+	response.GoodsList = protoList
+	response.Code = misc.CodeSuccess
 	return response, nil
 }

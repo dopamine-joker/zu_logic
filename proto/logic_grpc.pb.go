@@ -24,6 +24,8 @@ type RpcLogicServiceClient interface {
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 	CheckAuth(ctx context.Context, in *CheckAuthRequest, opts ...grpc.CallOption) (*CheckAuthResponse, error)
 	UploadPic(ctx context.Context, in *UploadRequest, opts ...grpc.CallOption) (*UploadResponse, error)
+	GetGoods(ctx context.Context, in *GetGoodsRequest, opts ...grpc.CallOption) (*GetGoodsResponse, error)
+	GetGoodsPic(ctx context.Context, in *GetGoodsPicRequest, opts ...grpc.CallOption) (*GetGoodsPicResponse, error)
 }
 
 type rpcLogicServiceClient struct {
@@ -88,6 +90,24 @@ func (c *rpcLogicServiceClient) UploadPic(ctx context.Context, in *UploadRequest
 	return out, nil
 }
 
+func (c *rpcLogicServiceClient) GetGoods(ctx context.Context, in *GetGoodsRequest, opts ...grpc.CallOption) (*GetGoodsResponse, error) {
+	out := new(GetGoodsResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/GetGoods", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcLogicServiceClient) GetGoodsPic(ctx context.Context, in *GetGoodsPicRequest, opts ...grpc.CallOption) (*GetGoodsPicResponse, error) {
+	out := new(GetGoodsPicResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/GetGoodsPic", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RpcLogicServiceServer is the server API for RpcLogicService service.
 // All implementations must embed UnimplementedRpcLogicServiceServer
 // for forward compatibility
@@ -98,6 +118,8 @@ type RpcLogicServiceServer interface {
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	CheckAuth(context.Context, *CheckAuthRequest) (*CheckAuthResponse, error)
 	UploadPic(context.Context, *UploadRequest) (*UploadResponse, error)
+	GetGoods(context.Context, *GetGoodsRequest) (*GetGoodsResponse, error)
+	GetGoodsPic(context.Context, *GetGoodsPicRequest) (*GetGoodsPicResponse, error)
 	mustEmbedUnimplementedRpcLogicServiceServer()
 }
 
@@ -122,6 +144,12 @@ func (UnimplementedRpcLogicServiceServer) CheckAuth(context.Context, *CheckAuthR
 }
 func (UnimplementedRpcLogicServiceServer) UploadPic(context.Context, *UploadRequest) (*UploadResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadPic not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) GetGoods(context.Context, *GetGoodsRequest) (*GetGoodsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGoods not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) GetGoodsPic(context.Context, *GetGoodsPicRequest) (*GetGoodsPicResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGoodsPic not implemented")
 }
 func (UnimplementedRpcLogicServiceServer) mustEmbedUnimplementedRpcLogicServiceServer() {}
 
@@ -244,6 +272,42 @@ func _RpcLogicService_UploadPic_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RpcLogicService_GetGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGoodsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).GetGoods(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/GetGoods",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).GetGoods(ctx, req.(*GetGoodsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcLogicService_GetGoodsPic_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGoodsPicRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).GetGoodsPic(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/GetGoodsPic",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).GetGoodsPic(ctx, req.(*GetGoodsPicRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RpcLogicService_ServiceDesc is the grpc.ServiceDesc for RpcLogicService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -274,6 +338,14 @@ var RpcLogicService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UploadPic",
 			Handler:    _RpcLogicService_UploadPic_Handler,
+		},
+		{
+			MethodName: "GetGoods",
+			Handler:    _RpcLogicService_GetGoods_Handler,
+		},
+		{
+			MethodName: "GetGoodsPic",
+			Handler:    _RpcLogicService_GetGoodsPic_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

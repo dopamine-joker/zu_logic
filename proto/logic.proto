@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package="github.com/dopamine-joker/zu_logic/proto";
+option go_package = "github.com/dopamine-joker/zu_logic/proto";
 package proto;
 
 service RpcLogicService {
@@ -10,6 +10,37 @@ service RpcLogicService {
   rpc Logout(LogoutRequest) returns (LogoutResponse);
   rpc CheckAuth(CheckAuthRequest) returns (CheckAuthResponse);
   rpc UploadPic(UploadRequest) returns (UploadResponse);
+  rpc GetGoods(GetGoodsRequest) returns (GetGoodsResponse);
+  rpc GetGoodsPic(GetGoodsPicRequest) returns (GetGoodsPicResponse);
+}
+
+message GetGoodsPicRequest {
+  int32 gid = 1;
+}
+
+message GetGoodsPicResponse {
+  int32 Code = 1;
+  int32 gid = 2;
+  int32 len = 3;
+  repeated string path = 4;
+}
+
+message GetGoodsRequest {
+  int32 page = 1;
+  int32 count = 2;
+}
+
+message GetGoodsResponse {
+  int32 Code = 1;
+  repeated Goods GoodsList = 2;
+}
+
+message Goods {
+  int32 id = 1;
+  string Name = 2;  //商品名称
+  string Uname = 3; //商家名称
+  string Price = 4; //价格
+  string Cover = 5; //封面url
 }
 
 message User {
@@ -23,7 +54,8 @@ message UploadRequest {
   string Name = 2;
   string Price = 3;
   string detail = 4;
-  repeated PicStream picList = 5;
+  PicStream cover = 5;
+  repeated PicStream picList = 6;
 }
 
 message PicStream {
