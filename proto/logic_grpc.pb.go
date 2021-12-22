@@ -25,7 +25,7 @@ type RpcLogicServiceClient interface {
 	CheckAuth(ctx context.Context, in *CheckAuthRequest, opts ...grpc.CallOption) (*CheckAuthResponse, error)
 	UploadPic(ctx context.Context, in *UploadRequest, opts ...grpc.CallOption) (*UploadResponse, error)
 	GetGoods(ctx context.Context, in *GetGoodsRequest, opts ...grpc.CallOption) (*GetGoodsResponse, error)
-	GetGoodsPic(ctx context.Context, in *GetGoodsPicRequest, opts ...grpc.CallOption) (*GetGoodsPicResponse, error)
+	GetGoodsPic(ctx context.Context, in *GetGoodsDetailRequest, opts ...grpc.CallOption) (*GetGoodsDetailResponse, error)
 }
 
 type rpcLogicServiceClient struct {
@@ -99,8 +99,8 @@ func (c *rpcLogicServiceClient) GetGoods(ctx context.Context, in *GetGoodsReques
 	return out, nil
 }
 
-func (c *rpcLogicServiceClient) GetGoodsPic(ctx context.Context, in *GetGoodsPicRequest, opts ...grpc.CallOption) (*GetGoodsPicResponse, error) {
-	out := new(GetGoodsPicResponse)
+func (c *rpcLogicServiceClient) GetGoodsPic(ctx context.Context, in *GetGoodsDetailRequest, opts ...grpc.CallOption) (*GetGoodsDetailResponse, error) {
+	out := new(GetGoodsDetailResponse)
 	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/GetGoodsPic", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ type RpcLogicServiceServer interface {
 	CheckAuth(context.Context, *CheckAuthRequest) (*CheckAuthResponse, error)
 	UploadPic(context.Context, *UploadRequest) (*UploadResponse, error)
 	GetGoods(context.Context, *GetGoodsRequest) (*GetGoodsResponse, error)
-	GetGoodsPic(context.Context, *GetGoodsPicRequest) (*GetGoodsPicResponse, error)
+	GetGoodsPic(context.Context, *GetGoodsDetailRequest) (*GetGoodsDetailResponse, error)
 	mustEmbedUnimplementedRpcLogicServiceServer()
 }
 
@@ -148,7 +148,7 @@ func (UnimplementedRpcLogicServiceServer) UploadPic(context.Context, *UploadRequ
 func (UnimplementedRpcLogicServiceServer) GetGoods(context.Context, *GetGoodsRequest) (*GetGoodsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGoods not implemented")
 }
-func (UnimplementedRpcLogicServiceServer) GetGoodsPic(context.Context, *GetGoodsPicRequest) (*GetGoodsPicResponse, error) {
+func (UnimplementedRpcLogicServiceServer) GetGoodsPic(context.Context, *GetGoodsDetailRequest) (*GetGoodsDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGoodsPic not implemented")
 }
 func (UnimplementedRpcLogicServiceServer) mustEmbedUnimplementedRpcLogicServiceServer() {}
@@ -291,7 +291,7 @@ func _RpcLogicService_GetGoods_Handler(srv interface{}, ctx context.Context, dec
 }
 
 func _RpcLogicService_GetGoodsPic_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetGoodsPicRequest)
+	in := new(GetGoodsDetailRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -303,7 +303,7 @@ func _RpcLogicService_GetGoodsPic_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/proto.RpcLogicService/GetGoodsPic",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RpcLogicServiceServer).GetGoodsPic(ctx, req.(*GetGoodsPicRequest))
+		return srv.(RpcLogicServiceServer).GetGoodsPic(ctx, req.(*GetGoodsDetailRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

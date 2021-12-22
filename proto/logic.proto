@@ -11,18 +11,33 @@ service RpcLogicService {
   rpc CheckAuth(CheckAuthRequest) returns (CheckAuthResponse);
   rpc UploadPic(UploadRequest) returns (UploadResponse);
   rpc GetGoods(GetGoodsRequest) returns (GetGoodsResponse);
-  rpc GetGoodsPic(GetGoodsPicRequest) returns (GetGoodsPicResponse);
+  rpc GetGoodsPic(GetGoodsDetailRequest) returns (GetGoodsDetailResponse);
 }
 
-message GetGoodsPicRequest {
+message GetGoodsDetailRequest {
   int32 gid = 1;
 }
 
-message GetGoodsPicResponse {
-  int32 Code = 1;
-  int32 gid = 2;
-  int32 len = 3;
-  repeated string path = 4;
+message GetGoodsDetailResponse {
+  int32 code = 1;
+  GoodsDetail goods = 2;
+  repeated Pic picList = 3;
+}
+
+message GoodsDetail {
+  int32 gid = 1;
+  int32 uid = 2;
+  string name = 3;
+  string uname = 4;
+  string price = 5;
+  string detail = 6;
+  string cover = 7;
+  int64 create_time = 8;
+}
+
+message Pic {
+  int32 pid = 1;
+  string path = 2;
 }
 
 message GetGoodsRequest {

@@ -19,12 +19,14 @@ type Goods struct {
 	Detail     string    `json:"detail" db:"detail"`
 	Cover      string    `json:"cover" db:"cover"` //封面url
 	CreateTime time.Time `json:"create_time" db:"create_time"`
+	PicList    []PicGoods
 }
 
 type PicGoods struct {
-	Id      int32  `json:"id" db:"id"`           //唯一表示图片
-	GoodsId int32  `json:"goodsId" db:"goodsId"` //对应物品的id
-	Path    string `json:"path" db:"path"`       //图片的路径
+	Id      int32  `json:"id" db:"id"`       //图片id
+	UserId  int32  `json:"userId" db:"uId"`  //用户的id
+	GoodsId int32  `json:"goodsId" db:"gId"` //对应物品的id
+	Path    string `json:"path" db:"path"`   //图片的路径
 }
 
 //AddGoods 增加一条物品信息
@@ -86,6 +88,7 @@ func GetGoodsByUserId(ctx context.Context, userId int32) ([]Goods, error) {
 	return goodsList, nil
 }
 
+//GetGoods 翻页查找
 func GetGoods(ctx context.Context, page, count int32) ([]Goods, error) {
 	var goodsList []Goods
 	var err error
@@ -97,13 +100,46 @@ func GetGoods(ctx context.Context, page, count int32) ([]Goods, error) {
 	return goodsList, nil
 }
 
-//GetGoodsPic 根据商品id获取其具体照片
-func GetGoodsPic(ctx context.Context, gid int32) ([]PicGoods, error) {
-	var picGoods []PicGoods
+//GetGoodsDetail 根据商品id获取具体信息
+func GetGoodsDetail(ctx context.Context, gid int32) (Goods, error) {
+	var goods Goods
+	var picList []PicGoods
 	var err error
-	if err = db.SqlDb.SelectContext(ctx, &picGoods, `select * from z_goods_pic where gid = ?`, gid); err != nil {
-		misc.Logger.Warn("get picGoods err", zap.Error(err))
-		return nil, err
+
+	tx, err := db.SqlDb.Begin()
+	if err != nil {
+		misc.Logger.Warn("picList start transaction err", zap.Error(err))
+		return Goods{}, err
 	}
-	return picGoods, nil
+
+	row := tx.QueryRowContext(ctx, `select * from z_goods where id = ?`, gid)
+
+	if err = row.Scan(&goods.Id, &goods.UserId, &goods.Name, &goods.Uname, &goods.Price, &goods.Detail, &goods.Cover, &goods.CreateTime); err != nil {
+		_ = tx.Rollback()
+		return Goods{}, err
+	}
+
+	rows, err := tx.QueryContext(ctx, `select * from z_goods_pic where gid = ?`, gid)
+	if err != nil {
+		_ = tx.Rollback()
+		return Goods{}, err
+	}
+
+	for rows.Next() {
+		var pic PicGoods
+		if err = rows.Scan(&pic.Id, &pic.UserId, &pic.GoodsId, &pic.Path); err != nil {
+			_ = tx.Rollback()
+			return Goods{}, err
+		}
+		picList = append(picList, pic)
+	}
+
+	if err = tx.Commit(); err != nil {
+		_ = tx.Rollback()
+		return Goods{}, err
+	}
+
+	goods.PicList = picList
+
+	return goods, nil
 }

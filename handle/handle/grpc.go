@@ -325,3 +325,38 @@ func (r *RpcLogicServer) GetGoods(ctx context.Context, req *proto.GetGoodsReques
 	response.Code = misc.CodeSuccess
 	return response, nil
 }
+
+func (r *RpcLogicServer) GetGoodsPic(ctx context.Context, req *proto.GetGoodsDetailRequest) (*proto.GetGoodsDetailResponse, error) {
+	response := &proto.GetGoodsDetailResponse{
+		Code: misc.CodeFail,
+	}
+	goods, err := dao.GetGoodsDetail(ctx, req.GetGid())
+	if err != nil {
+		misc.Logger.Error("get goods pic err", zap.Error(err))
+		return response, err
+	}
+
+	var picList []*proto.Pic
+
+	for _, p := range goods.PicList {
+		picList = append(picList, &proto.Pic{
+			Pid:  p.Id,
+			Path: p.Path,
+		})
+	}
+
+	response.Code = misc.CodeSuccess
+	response.Goods = &proto.GoodsDetail{
+		Gid:        goods.Id,
+		Uid:        goods.UserId,
+		Name:       goods.Name,
+		Uname:      goods.Uname,
+		Price:      strconv.FormatFloat(goods.Price, 'f', 2, 32),
+		Detail:     goods.Detail,
+		Cover:      goods.Cover,
+		CreateTime: goods.CreateTime.Unix(),
+	}
+	response.PicList = picList
+
+	return response, nil
+}
