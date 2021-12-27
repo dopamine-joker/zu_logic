@@ -16,6 +16,7 @@ type User struct {
 	Email      string    `json:"email" db:"email"`
 	Name       string    `json:"name" db:"name"`
 	Password   string    `json:"password" db:"password"`
+	Face       string    `json:"face" db:"face"`
 	CreateTime time.Time `json:"create_time" db:"create_time"`
 }
 
@@ -28,8 +29,8 @@ func AddUser(ctx context.Context, email, name, password string) (userId int32, e
 	if oUser.Id > 0 {
 		return oUser.Id, errors.New("the user already exists")
 	}
-	if _, err = db.SqlDb.QueryContext(ctx, `insert into z_user(id, email, name, password, create_time) 
-values(null, ?, ?, ?, ?)`, email, name, password, time.Now()); err != nil {
+	if _, err = db.SqlDb.QueryContext(ctx, `insert into z_user(id, email, name, password, face, create_time) 
+values(null, ?, ?, ?, '', ?)`, email, name, password, time.Now()); err != nil {
 		return -1, err
 	}
 	u := GetUserByEmail(ctx, email)
@@ -46,4 +47,24 @@ func GetUserByEmail(ctx context.Context, email string) User {
 		return User{}
 	}
 	return user
+}
+
+//UpdateUser 更新user
+func UpdateUser(ctx context.Context, email, name, password string, id int32) error {
+	if _, err := db.SqlDb.ExecContext(ctx, `update z_user set email = ?, name = ?, password = ? where id = ?`,
+		email, name, password, id); err != nil {
+		misc.Logger.Warn("update user err, no this user", zap.String("email", email))
+		return err
+	}
+	return nil
+}
+
+//UpdateFace 更新头像
+func UpdateFace(ctx context.Context, path string, id int32) error {
+	if _, err := db.SqlDb.ExecContext(ctx, `update z_user set face = ? where id = ?`,
+		path, id); err != nil {
+		misc.Logger.Warn("update user face path err, no this user", zap.String("path", path))
+		return err
+	}
+	return nil
 }

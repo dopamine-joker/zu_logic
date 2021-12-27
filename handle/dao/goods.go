@@ -3,6 +3,7 @@ package dao
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/dopamine-joker/zu_logic/db"
 	"github.com/dopamine-joker/zu_logic/misc"
 	"go.uber.org/zap"
@@ -78,6 +79,7 @@ values(null, ?, ?, ?, ?, ?, ?, ?)`, uid, name, uname, price, detail, coverPath, 
 	return
 }
 
+//GetGoodsByUserId 查询用户的商品
 func GetGoodsByUserId(ctx context.Context, userId int32) ([]Goods, error) {
 	var goodsList []Goods
 	var err error
@@ -98,6 +100,39 @@ func GetGoods(ctx context.Context, page, count int32) ([]Goods, error) {
 		return nil, err
 	}
 	return goodsList, nil
+}
+
+//DelGoods 删除货物
+func DelGoods(ctx context.Context, gid int32) error {
+	var err error
+
+	tx, err := db.SqlDb.Begin()
+	if err != nil {
+		misc.Logger.Error("start tx err", zap.Error(err))
+		return err
+	}
+
+	//删除货物
+	if _, err = tx.ExecContext(ctx, `delete from z_goods where id = ?`, gid); err != nil {
+		_ = tx.Rollback()
+		misc.Logger.Error("delete goods err", zap.Error(err))
+		return err
+	}
+
+	//删除照片
+	if _, err = tx.ExecContext(ctx, `delete from z_goods_pic where gId = ?`, gid); err != nil {
+		_ = tx.Rollback()
+		misc.Logger.Error("delete goods pic err", zap.Error(err))
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		_ = tx.Rollback()
+		misc.Logger.Error("commit tx err", zap.Error(err))
+		return err
+	}
+
+	return nil
 }
 
 //GetGoodsDetail 根据商品id获取具体信息
@@ -142,4 +177,16 @@ func GetGoodsDetail(ctx context.Context, gid int32) (Goods, error) {
 	goods.PicList = picList
 
 	return goods, nil
+}
+
+//GetGoodsByName 根据名字查找货物
+func GetGoodsByName(ctx context.Context, name string) ([]Goods, error) {
+	var goodList []Goods
+	var err error
+	if err = db.SqlDb.SelectContext(ctx, &goodList, `select * from z_goods where name like ?`,
+		fmt.Sprintf("%%%s%%", name)); err != nil {
+		misc.Logger.Warn("GetGoods err", zap.Error(err))
+		return nil, err
+	}
+	return goodList, nil
 }

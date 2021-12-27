@@ -6,12 +6,101 @@ package proto;
 service RpcLogicService {
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc TokenLogin(TokenLoginRequest) returns (TokenLoginResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc Logout(LogoutRequest) returns (LogoutResponse);
   rpc CheckAuth(CheckAuthRequest) returns (CheckAuthResponse);
   rpc UploadPic(UploadRequest) returns (UploadResponse);
+  rpc DeleteGoods(DeleteGoodsRequest) returns(DeleteGoodsResponse);
   rpc GetGoods(GetGoodsRequest) returns (GetGoodsResponse);
+  rpc UserGoods(GetUserGoodsListRequest) returns(GetUserGoodsListResponse);
   rpc GetGoodsPic(GetGoodsDetailRequest) returns (GetGoodsDetailResponse);
+  rpc SearchGoods(SearchGoodsRequest) returns (SearchGoodsResponse);
+  rpc AddOrder(AddOrderRequest) returns (AddOrderResponse);
+  rpc GetBuyOrder(GetBuyOrderRequest) returns (GetBuyOrderResponse);
+  rpc GetSellOrder(GetSellOrderRequest) returns (GetSellOrderResponse);
+  rpc UpdateOrder(UpdateOrderRequest) returns (UpdateOrderResponse);
+  rpc UploadFace(UploadFaceRequest) returns (UploadFaceResponse);
+}
+
+message UpdateUserRequest {
+  int32 uid = 1;
+  string email = 2;
+  string name = 3;
+  string password = 4;
+}
+
+message UpdateUserResponse {
+  int32 code = 1;
+}
+
+message UpdateOrderRequest {
+  int32 id = 1;
+  int32 status = 2;
+}
+
+message UpdateOrderResponse {
+  int32 code = 1;
+}
+
+message DeleteGoodsRequest {
+  int32 gid = 1;
+}
+
+message DeleteGoodsResponse {
+  int32 code = 1;
+}
+
+message GetSellOrderRequest {
+  int32 sellid = 1;
+}
+
+message GetSellOrderResponse {
+  int32 code = 1;
+  repeated Order orderList = 2;
+}
+
+message GetBuyOrderRequest {
+  int32 buyid = 1;
+}
+
+message GetBuyOrderResponse {
+  int32 code = 1;
+  repeated Order orderList = 2;
+}
+
+message Order {
+  int32 id = 1;
+  int32 buyid = 2;
+  string buyName = 3;
+  int32 sellid = 4;
+  string sellName = 5;
+  int32 GId = 6;
+  string Gname = 7;
+  string price = 8;
+  string cover = 9;
+  int32 status = 10;
+  int64 time = 11;
+}
+
+message AddOrderRequest {
+  int32 buyid = 1;
+  int32 sellid = 2;
+  int32 gid = 3;
+}
+
+message AddOrderResponse {
+  int32 code = 1;
+  int32 oid = 2;
+}
+
+message SearchGoodsRequest {
+  string name = 1;
+}
+
+message SearchGoodsResponse {
+  int32 code = 1;
+  repeated GoodsDetail list = 2;
 }
 
 message GetGoodsDetailRequest {
@@ -22,6 +111,15 @@ message GetGoodsDetailResponse {
   int32 code = 1;
   GoodsDetail goods = 2;
   repeated Pic picList = 3;
+}
+
+message GetUserGoodsListRequest {
+  int32 uid = 1;
+}
+
+message GetUserGoodsListResponse {
+  int32 code = 1;
+  repeated GoodsDetail list = 2;
 }
 
 message GoodsDetail {
@@ -62,6 +160,7 @@ message User {
   int32 Id = 1;
   string Email = 2;
   string Name = 3;
+  string Face = 4;
 }
 
 message UploadRequest {
@@ -71,6 +170,16 @@ message UploadRequest {
   string detail = 4;
   PicStream cover = 5;
   repeated PicStream picList = 6;
+}
+
+message UploadFaceRequest {
+  int32 Uid = 1;
+  PicStream pic = 2;
+}
+
+message UploadFaceResponse {
+  int32 code = 1;
+  string path = 2;
 }
 
 message PicStream {

@@ -93,6 +93,7 @@ func (r *RpcLogicServer) Login(ctx context.Context, request *proto.LoginRequest)
 		Id:    user.Id,
 		Email: user.Email,
 		Name:  user.Name,
+		Face:  user.Face,
 	}
 	return response, nil
 }
@@ -132,10 +133,25 @@ func (r *RpcLogicServer) TokenLogin(ctx context.Context, request *proto.TokenLog
 	user.Id = int32(intUserId)
 	user.Email = userDataMap["Email"]
 	user.Name = userDataMap["Name"]
+	user.Face = userDataMap["Face"]
 
 	response.Code = misc.CodeSuccess
 	response.AuthToken = tokenId
 	response.User = user
+	return response, nil
+}
+
+func (r *RpcLogicServer) UpdateUser(ctx context.Context, req *proto.UpdateUserRequest) (*proto.UpdateUserResponse, error) {
+	response := &proto.UpdateUserResponse{
+		Code: misc.CodeFail,
+	}
+
+	if err := dao.UpdateUser(ctx, req.Email, req.Name, req.Password, req.Uid); err != nil {
+		misc.Logger.Error("update user err", zap.Error(err))
+		return response, err
+	}
+
+	response.Code = misc.CodeSuccess
 	return response, nil
 }
 
@@ -218,6 +234,7 @@ func (r *RpcLogicServer) Logout(ctx context.Context, request *proto.LogoutReques
 const (
 	fileNamePrefix  = "pic_"
 	coverNamePrefix = "cover_"
+	facePrefix      = "face_"
 	tmpFilePrePath  = "./upload/"
 )
 
@@ -248,6 +265,27 @@ func writePic(ctx context.Context, file *proto.PicStream, namePrefix string) (st
 	}
 
 	return res.Location, nil
+}
+
+func (r *RpcLogicServer) UploadFace(ctx context.Context, req *proto.UploadFaceRequest) (*proto.UploadFaceResponse, error) {
+	response := &proto.UploadFaceResponse{
+		Code: misc.CodeFail,
+	}
+
+	facePath, err := writePic(ctx, req.Pic, facePrefix)
+	if err != nil {
+		return response, err
+	}
+
+	if err = dao.UpdateFace(ctx, facePath, req.Uid); err != nil {
+		return response, err
+	}
+
+	log.Println(facePath)
+
+	response.Code = misc.CodeSuccess
+	response.Path = facePath
+	return response, nil
 }
 
 //UploadPic 上传图片到logic
@@ -295,6 +333,18 @@ func (r *RpcLogicServer) UploadPic(ctx context.Context, req *proto.UploadRequest
 	return response, nil
 }
 
+func (r *RpcLogicServer) DeleteGoods(ctx context.Context, req *proto.DeleteGoodsRequest) (*proto.DeleteGoodsResponse, error) {
+	response := &proto.DeleteGoodsResponse{
+		Code: misc.CodeFail,
+	}
+	err := dao.DelGoods(ctx, req.Gid)
+	if err != nil {
+		return response, err
+	}
+	response.Code = misc.CodeSuccess
+	return response, nil
+}
+
 func (r *RpcLogicServer) GetGoods(ctx context.Context, req *proto.GetGoodsRequest) (*proto.GetGoodsResponse, error) {
 	response := &proto.GetGoodsResponse{
 		Code: misc.CodeFail,
@@ -323,6 +373,36 @@ func (r *RpcLogicServer) GetGoods(ctx context.Context, req *proto.GetGoodsReques
 
 	response.GoodsList = protoList
 	response.Code = misc.CodeSuccess
+	return response, nil
+}
+
+func (r *RpcLogicServer) UserGoods(ctx context.Context, req *proto.GetUserGoodsListRequest) (*proto.GetUserGoodsListResponse, error) {
+	response := &proto.GetUserGoodsListResponse{
+		Code: misc.CodeFail,
+	}
+
+	list, err := dao.GetGoodsByUserId(ctx, req.Uid)
+	if err != nil {
+		return response, err
+	}
+
+	var protoList []*proto.GoodsDetail
+
+	for _, l := range list {
+		protoList = append(protoList, &proto.GoodsDetail{
+			Gid:        l.Id,
+			Uid:        l.UserId,
+			Name:       l.Name,
+			Uname:      l.Uname,
+			Price:      strconv.FormatFloat(l.Price, 'f', 2, 32),
+			Detail:     l.Detail,
+			Cover:      l.Cover,
+			CreateTime: l.CreateTime.Unix(),
+		})
+	}
+
+	response.Code = misc.CodeSuccess
+	response.List = protoList
 	return response, nil
 }
 
@@ -358,5 +438,135 @@ func (r *RpcLogicServer) GetGoodsPic(ctx context.Context, req *proto.GetGoodsDet
 	}
 	response.PicList = picList
 
+	return response, nil
+}
+
+func (r *RpcLogicServer) SearchGoods(ctx context.Context, req *proto.SearchGoodsRequest) (*proto.SearchGoodsResponse, error) {
+	response := &proto.SearchGoodsResponse{
+		Code: misc.CodeFail,
+	}
+
+	list, err := dao.GetGoodsByName(ctx, req.Name)
+	if err != nil {
+		misc.Logger.Error("get goods by name err", zap.Error(err))
+		return response, err
+	}
+
+	var protoList []*proto.GoodsDetail
+
+	for _, l := range list {
+		protoList = append(protoList, &proto.GoodsDetail{
+			Gid:        l.Id,
+			Uid:        l.UserId,
+			Name:       l.Name,
+			Uname:      l.Uname,
+			Price:      strconv.FormatFloat(l.Price, 'f', 2, 32),
+			Detail:     l.Detail,
+			Cover:      l.Cover,
+			CreateTime: l.CreateTime.Unix(),
+		})
+	}
+
+	response.List = protoList
+	response.Code = misc.CodeSuccess
+
+	return response, nil
+}
+
+func (r *RpcLogicServer) AddOrder(ctx context.Context, req *proto.AddOrderRequest) (*proto.AddOrderResponse, error) {
+	response := &proto.AddOrderResponse{
+		Code: misc.CodeFail,
+	}
+
+	oid, err := dao.AddOrder(ctx, req.Buyid, req.Sellid, req.Gid, dao.COMMIT)
+	if err != nil {
+		misc.Logger.Error("add order err", zap.Error(err))
+		return response, err
+	}
+
+	response.Code = misc.CodeSuccess
+	response.Oid = oid
+	return response, nil
+}
+
+func (r *RpcLogicServer) GetBuyOrder(ctx context.Context, req *proto.GetBuyOrderRequest) (*proto.GetBuyOrderResponse, error) {
+	response := &proto.GetBuyOrderResponse{
+		Code: misc.CodeFail,
+	}
+
+	list, err := dao.GetBuyOrder(ctx, req.Buyid)
+	if err != nil {
+		misc.Logger.Error("add order err", zap.Error(err))
+		return response, err
+	}
+
+	var protoList []*proto.Order
+	for _, o := range list {
+		protoList = append(protoList, &proto.Order{
+			Id:       o.Id,
+			Buyid:    o.BuyId,
+			BuyName:  o.BuyUserName,
+			Sellid:   o.SellId,
+			SellName: o.SellUserName,
+			GId:      o.GId,
+			Gname:    o.GName,
+			Price:    strconv.FormatFloat(o.Price, 'f', 2, 32),
+			Cover:    o.Cover,
+			Status:   o.Status,
+			Time:     o.Time.Unix(),
+		})
+	}
+
+	response.Code = misc.CodeSuccess
+	response.OrderList = protoList
+	return response, nil
+}
+
+func (r *RpcLogicServer) GetSellOrder(ctx context.Context, req *proto.GetSellOrderRequest) (*proto.GetSellOrderResponse, error) {
+	response := &proto.GetSellOrderResponse{
+		Code: misc.CodeFail,
+	}
+
+	list, err := dao.GetSellOrder(ctx, req.Sellid)
+	if err != nil {
+		misc.Logger.Error("add order err", zap.Error(err))
+		return response, err
+	}
+
+	var protoList []*proto.Order
+	for _, o := range list {
+		protoList = append(protoList, &proto.Order{
+			Id:       o.Id,
+			Buyid:    o.BuyId,
+			BuyName:  o.BuyUserName,
+			Sellid:   o.SellId,
+			SellName: o.SellUserName,
+			GId:      o.GId,
+			Gname:    o.GName,
+			Price:    strconv.FormatFloat(o.Price, 'f', 2, 32),
+			Cover:    o.Cover,
+			Status:   o.Status,
+			Time:     o.Time.Unix(),
+		})
+	}
+
+	response.Code = misc.CodeSuccess
+	response.OrderList = protoList
+	return response, nil
+}
+
+func (r *RpcLogicServer) UpdateOrder(ctx context.Context, req *proto.UpdateOrderRequest) (*proto.UpdateOrderResponse, error) {
+	response := &proto.UpdateOrderResponse{
+		Code: misc.CodeFail,
+	}
+
+	status := dao.OrderStatus(req.Status)
+
+	if err := dao.UpdateOrder(ctx, req.Id, status); err != nil {
+		misc.Logger.Error("update order err", zap.Error(err))
+		return response, err
+	}
+
+	response.Code = misc.CodeSuccess
 	return response, nil
 }

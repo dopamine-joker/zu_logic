@@ -20,12 +20,21 @@ const _ = grpc.SupportPackageIsVersion7
 type RpcLogicServiceClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	TokenLogin(ctx context.Context, in *TokenLoginRequest, opts ...grpc.CallOption) (*TokenLoginResponse, error)
+	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 	CheckAuth(ctx context.Context, in *CheckAuthRequest, opts ...grpc.CallOption) (*CheckAuthResponse, error)
 	UploadPic(ctx context.Context, in *UploadRequest, opts ...grpc.CallOption) (*UploadResponse, error)
+	DeleteGoods(ctx context.Context, in *DeleteGoodsRequest, opts ...grpc.CallOption) (*DeleteGoodsResponse, error)
 	GetGoods(ctx context.Context, in *GetGoodsRequest, opts ...grpc.CallOption) (*GetGoodsResponse, error)
+	UserGoods(ctx context.Context, in *GetUserGoodsListRequest, opts ...grpc.CallOption) (*GetUserGoodsListResponse, error)
 	GetGoodsPic(ctx context.Context, in *GetGoodsDetailRequest, opts ...grpc.CallOption) (*GetGoodsDetailResponse, error)
+	SearchGoods(ctx context.Context, in *SearchGoodsRequest, opts ...grpc.CallOption) (*SearchGoodsResponse, error)
+	AddOrder(ctx context.Context, in *AddOrderRequest, opts ...grpc.CallOption) (*AddOrderResponse, error)
+	GetBuyOrder(ctx context.Context, in *GetBuyOrderRequest, opts ...grpc.CallOption) (*GetBuyOrderResponse, error)
+	GetSellOrder(ctx context.Context, in *GetSellOrderRequest, opts ...grpc.CallOption) (*GetSellOrderResponse, error)
+	UpdateOrder(ctx context.Context, in *UpdateOrderRequest, opts ...grpc.CallOption) (*UpdateOrderResponse, error)
+	UploadFace(ctx context.Context, in *UploadFaceRequest, opts ...grpc.CallOption) (*UploadFaceResponse, error)
 }
 
 type rpcLogicServiceClient struct {
@@ -48,6 +57,15 @@ func (c *rpcLogicServiceClient) Login(ctx context.Context, in *LoginRequest, opt
 func (c *rpcLogicServiceClient) TokenLogin(ctx context.Context, in *TokenLoginRequest, opts ...grpc.CallOption) (*TokenLoginResponse, error) {
 	out := new(TokenLoginResponse)
 	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/TokenLogin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcLogicServiceClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error) {
+	out := new(UpdateUserResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/UpdateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -90,9 +108,27 @@ func (c *rpcLogicServiceClient) UploadPic(ctx context.Context, in *UploadRequest
 	return out, nil
 }
 
+func (c *rpcLogicServiceClient) DeleteGoods(ctx context.Context, in *DeleteGoodsRequest, opts ...grpc.CallOption) (*DeleteGoodsResponse, error) {
+	out := new(DeleteGoodsResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/DeleteGoods", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rpcLogicServiceClient) GetGoods(ctx context.Context, in *GetGoodsRequest, opts ...grpc.CallOption) (*GetGoodsResponse, error) {
 	out := new(GetGoodsResponse)
 	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/GetGoods", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcLogicServiceClient) UserGoods(ctx context.Context, in *GetUserGoodsListRequest, opts ...grpc.CallOption) (*GetUserGoodsListResponse, error) {
+	out := new(GetUserGoodsListResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/UserGoods", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -108,18 +144,81 @@ func (c *rpcLogicServiceClient) GetGoodsPic(ctx context.Context, in *GetGoodsDet
 	return out, nil
 }
 
+func (c *rpcLogicServiceClient) SearchGoods(ctx context.Context, in *SearchGoodsRequest, opts ...grpc.CallOption) (*SearchGoodsResponse, error) {
+	out := new(SearchGoodsResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/SearchGoods", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcLogicServiceClient) AddOrder(ctx context.Context, in *AddOrderRequest, opts ...grpc.CallOption) (*AddOrderResponse, error) {
+	out := new(AddOrderResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/AddOrder", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcLogicServiceClient) GetBuyOrder(ctx context.Context, in *GetBuyOrderRequest, opts ...grpc.CallOption) (*GetBuyOrderResponse, error) {
+	out := new(GetBuyOrderResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/GetBuyOrder", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcLogicServiceClient) GetSellOrder(ctx context.Context, in *GetSellOrderRequest, opts ...grpc.CallOption) (*GetSellOrderResponse, error) {
+	out := new(GetSellOrderResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/GetSellOrder", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcLogicServiceClient) UpdateOrder(ctx context.Context, in *UpdateOrderRequest, opts ...grpc.CallOption) (*UpdateOrderResponse, error) {
+	out := new(UpdateOrderResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/UpdateOrder", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcLogicServiceClient) UploadFace(ctx context.Context, in *UploadFaceRequest, opts ...grpc.CallOption) (*UploadFaceResponse, error) {
+	out := new(UploadFaceResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/UploadFace", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RpcLogicServiceServer is the server API for RpcLogicService service.
 // All implementations must embed UnimplementedRpcLogicServiceServer
 // for forward compatibility
 type RpcLogicServiceServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	TokenLogin(context.Context, *TokenLoginRequest) (*TokenLoginResponse, error)
+	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	CheckAuth(context.Context, *CheckAuthRequest) (*CheckAuthResponse, error)
 	UploadPic(context.Context, *UploadRequest) (*UploadResponse, error)
+	DeleteGoods(context.Context, *DeleteGoodsRequest) (*DeleteGoodsResponse, error)
 	GetGoods(context.Context, *GetGoodsRequest) (*GetGoodsResponse, error)
+	UserGoods(context.Context, *GetUserGoodsListRequest) (*GetUserGoodsListResponse, error)
 	GetGoodsPic(context.Context, *GetGoodsDetailRequest) (*GetGoodsDetailResponse, error)
+	SearchGoods(context.Context, *SearchGoodsRequest) (*SearchGoodsResponse, error)
+	AddOrder(context.Context, *AddOrderRequest) (*AddOrderResponse, error)
+	GetBuyOrder(context.Context, *GetBuyOrderRequest) (*GetBuyOrderResponse, error)
+	GetSellOrder(context.Context, *GetSellOrderRequest) (*GetSellOrderResponse, error)
+	UpdateOrder(context.Context, *UpdateOrderRequest) (*UpdateOrderResponse, error)
+	UploadFace(context.Context, *UploadFaceRequest) (*UploadFaceResponse, error)
 	mustEmbedUnimplementedRpcLogicServiceServer()
 }
 
@@ -133,6 +232,9 @@ func (UnimplementedRpcLogicServiceServer) Login(context.Context, *LoginRequest) 
 func (UnimplementedRpcLogicServiceServer) TokenLogin(context.Context, *TokenLoginRequest) (*TokenLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TokenLogin not implemented")
 }
+func (UnimplementedRpcLogicServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
+}
 func (UnimplementedRpcLogicServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
@@ -145,11 +247,35 @@ func (UnimplementedRpcLogicServiceServer) CheckAuth(context.Context, *CheckAuthR
 func (UnimplementedRpcLogicServiceServer) UploadPic(context.Context, *UploadRequest) (*UploadResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadPic not implemented")
 }
+func (UnimplementedRpcLogicServiceServer) DeleteGoods(context.Context, *DeleteGoodsRequest) (*DeleteGoodsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteGoods not implemented")
+}
 func (UnimplementedRpcLogicServiceServer) GetGoods(context.Context, *GetGoodsRequest) (*GetGoodsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGoods not implemented")
 }
+func (UnimplementedRpcLogicServiceServer) UserGoods(context.Context, *GetUserGoodsListRequest) (*GetUserGoodsListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserGoods not implemented")
+}
 func (UnimplementedRpcLogicServiceServer) GetGoodsPic(context.Context, *GetGoodsDetailRequest) (*GetGoodsDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGoodsPic not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) SearchGoods(context.Context, *SearchGoodsRequest) (*SearchGoodsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchGoods not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) AddOrder(context.Context, *AddOrderRequest) (*AddOrderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddOrder not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) GetBuyOrder(context.Context, *GetBuyOrderRequest) (*GetBuyOrderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBuyOrder not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) GetSellOrder(context.Context, *GetSellOrderRequest) (*GetSellOrderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSellOrder not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) UpdateOrder(context.Context, *UpdateOrderRequest) (*UpdateOrderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateOrder not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) UploadFace(context.Context, *UploadFaceRequest) (*UploadFaceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UploadFace not implemented")
 }
 func (UnimplementedRpcLogicServiceServer) mustEmbedUnimplementedRpcLogicServiceServer() {}
 
@@ -196,6 +322,24 @@ func _RpcLogicService_TokenLogin_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RpcLogicServiceServer).TokenLogin(ctx, req.(*TokenLoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcLogicService_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).UpdateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/UpdateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).UpdateUser(ctx, req.(*UpdateUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -272,6 +416,24 @@ func _RpcLogicService_UploadPic_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RpcLogicService_DeleteGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteGoodsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).DeleteGoods(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/DeleteGoods",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).DeleteGoods(ctx, req.(*DeleteGoodsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RpcLogicService_GetGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetGoodsRequest)
 	if err := dec(in); err != nil {
@@ -286,6 +448,24 @@ func _RpcLogicService_GetGoods_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RpcLogicServiceServer).GetGoods(ctx, req.(*GetGoodsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcLogicService_UserGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserGoodsListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).UserGoods(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/UserGoods",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).UserGoods(ctx, req.(*GetUserGoodsListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -308,6 +488,114 @@ func _RpcLogicService_GetGoodsPic_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RpcLogicService_SearchGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchGoodsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).SearchGoods(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/SearchGoods",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).SearchGoods(ctx, req.(*SearchGoodsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcLogicService_AddOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddOrderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).AddOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/AddOrder",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).AddOrder(ctx, req.(*AddOrderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcLogicService_GetBuyOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBuyOrderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).GetBuyOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/GetBuyOrder",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).GetBuyOrder(ctx, req.(*GetBuyOrderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcLogicService_GetSellOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSellOrderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).GetSellOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/GetSellOrder",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).GetSellOrder(ctx, req.(*GetSellOrderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcLogicService_UpdateOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateOrderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).UpdateOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/UpdateOrder",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).UpdateOrder(ctx, req.(*UpdateOrderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcLogicService_UploadFace_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadFaceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).UploadFace(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/UploadFace",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).UploadFace(ctx, req.(*UploadFaceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RpcLogicService_ServiceDesc is the grpc.ServiceDesc for RpcLogicService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -322,6 +610,10 @@ var RpcLogicService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TokenLogin",
 			Handler:    _RpcLogicService_TokenLogin_Handler,
+		},
+		{
+			MethodName: "UpdateUser",
+			Handler:    _RpcLogicService_UpdateUser_Handler,
 		},
 		{
 			MethodName: "Register",
@@ -340,12 +632,44 @@ var RpcLogicService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RpcLogicService_UploadPic_Handler,
 		},
 		{
+			MethodName: "DeleteGoods",
+			Handler:    _RpcLogicService_DeleteGoods_Handler,
+		},
+		{
 			MethodName: "GetGoods",
 			Handler:    _RpcLogicService_GetGoods_Handler,
 		},
 		{
+			MethodName: "UserGoods",
+			Handler:    _RpcLogicService_UserGoods_Handler,
+		},
+		{
 			MethodName: "GetGoodsPic",
 			Handler:    _RpcLogicService_GetGoodsPic_Handler,
+		},
+		{
+			MethodName: "SearchGoods",
+			Handler:    _RpcLogicService_SearchGoods_Handler,
+		},
+		{
+			MethodName: "AddOrder",
+			Handler:    _RpcLogicService_AddOrder_Handler,
+		},
+		{
+			MethodName: "GetBuyOrder",
+			Handler:    _RpcLogicService_GetBuyOrder_Handler,
+		},
+		{
+			MethodName: "GetSellOrder",
+			Handler:    _RpcLogicService_GetSellOrder_Handler,
+		},
+		{
+			MethodName: "UpdateOrder",
+			Handler:    _RpcLogicService_UpdateOrder_Handler,
+		},
+		{
+			MethodName: "UploadFace",
+			Handler:    _RpcLogicService_UploadFace_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
