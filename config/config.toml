@@ -12,7 +12,7 @@ password = "123456"
 dbName = "zuzuxia"
 
 [etcd]
-host = ["10.252.72.5:49166", ":10.252.72.5:49168", "10.252.72.5:49170"]
+host = ["192.168.0.111:49166", "192.168.0.111:49168", "192.168.0.111:49170"]
 basePath = "zuzuxia_srv"
 serverPathLogic = "LogicRpc"
 timeout = 5
@@ -20,3 +20,8 @@ timeout = 5
 [logicBase]
 rpcPort = [6900, 6901]
 rpcAddress = ["tcp@127.0.0.1:6900", "tcp@127.0.0.1:6901"]
+
+[jaeger]
+scheme = "http://"
+host = "192.168.0.111:14268"
+path = "/api/traces"

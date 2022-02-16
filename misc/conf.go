@@ -20,6 +20,7 @@ func Init() {
 	}
 	InitLogger()
 	InitCos()
+	initJaeger()
 	db.InitSqlDb(Conf.MysqlCfg.UserName, Conf.MysqlCfg.Password, Conf.MysqlCfg.Address, Conf.MysqlCfg.Port, Conf.MysqlCfg.DbName)
 	db.InitRedis(Conf.RedisCfg.Address, Conf.RedisCfg.Port, Conf.RedisCfg.Password, Conf.RedisCfg.Db)
 }

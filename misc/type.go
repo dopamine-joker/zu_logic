@@ -1,10 +1,11 @@
 package misc
 
 type Config struct {
-	RedisCfg RedisConfig `mapstructure:"redis"`
-	MysqlCfg MysqlConfig `mapstructure:"mysql"`
-	EtcdCfg  EtcdConfig  `mapstructure:"etcd"`
-	Logic    LogicBase   `mapstructure:"logicBase"`
+	RedisCfg  RedisConfig  `mapstructure:"redis"`
+	MysqlCfg  MysqlConfig  `mapstructure:"mysql"`
+	EtcdCfg   EtcdConfig   `mapstructure:"etcd"`
+	Logic     LogicBase    `mapstructure:"logicBase"`
+	JaegerCfg JaegerConfig `mapstructure:"jaeger"`
 }
 
 type RedisConfig struct {
@@ -34,4 +35,10 @@ type LogicBase struct {
 	RpcPort         []int    `mapstructure:"rpcPort"`
 	BasePath        string   `mapstructure:"basePath"`
 	ServerPathLogic string   `mapstructure:"serverPathLogic"`
+}
+
+type JaegerConfig struct {
+	Schema string `mapstructure:"scheme"`
+	Host   string `mapstructure:"host"`
+	Path   string `mapstructure:"path"`
 }

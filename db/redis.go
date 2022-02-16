@@ -5,10 +5,16 @@ import (
 	"log"
 	"strings"
 
+	"github.com/go-redis/redis/extra/redisotel/v8"
 	"github.com/go-redis/redis/v8"
 )
 
 var RedisClient *redis.Client
+
+const (
+	RedisOrderAdd    = "zuzu_order_add"
+	RedisOrderUpdate = "zuzu_order_update"
+)
 
 func InitRedis(address, port, password string, db int) {
 	var err error
@@ -21,4 +27,5 @@ func InitRedis(address, port, password string, db int) {
 	if _, err = RedisClient.Ping(context.Background()).Result(); err != nil {
 		panic(err)
 	}
+	RedisClient.AddHook(redisotel.TracingHook{})
 }

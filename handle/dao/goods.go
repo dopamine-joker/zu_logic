@@ -41,15 +41,8 @@ func AddGoods(ctx context.Context, name, detail string, price float64, uid int32
 		return -1, err
 	}
 
-	var uname string
-	row := tx.QueryRowContext(ctx, `select name from z_user where id = ?`, uid)
-	if err = row.Scan(&uname); err != nil {
-		_ = tx.Rollback()
-		return -1, err
-	}
-
-	res, err := tx.ExecContext(ctx, `insert into z_goods(id, uid, name, uname, price, detail, cover, create_time) 
-values(null, ?, ?, ?, ?, ?, ?, ?)`, uid, name, uname, price, detail, coverPath, time.Now())
+	res, err := tx.ExecContext(ctx, `insert into z_goods(id, uid, name, price, detail, cover, create_time) 
+values(null, ?, ?, ?, ?, ?, ?)`, uid, name, price, detail, coverPath, time.Now())
 	if err != nil {
 		_ = tx.Rollback()
 		return -1, err
@@ -83,7 +76,8 @@ values(null, ?, ?, ?, ?, ?, ?, ?)`, uid, name, uname, price, detail, coverPath, 
 func GetGoodsByUserId(ctx context.Context, userId int32) ([]Goods, error) {
 	var goodsList []Goods
 	var err error
-	if err = db.SqlDb.SelectContext(ctx, &goodsList, `select * from z_goods where uid = ?`,
+	if err = db.SqlDb.SelectContext(ctx, &goodsList, `select zu.id as uid, zu.name as uname, zg.id, zg.name, zg.price, zg.detail, zg.cover, zg.create_time from z_user zu right join
+    (select id, uid, name, price, detail, cover, create_time from z_goods where uid = ?) zg on zu.id = zg.uid`,
 		userId); err != nil {
 		return nil, err
 	}
@@ -94,7 +88,8 @@ func GetGoodsByUserId(ctx context.Context, userId int32) ([]Goods, error) {
 func GetGoods(ctx context.Context, page, count int32) ([]Goods, error) {
 	var goodsList []Goods
 	var err error
-	if err = db.SqlDb.SelectContext(ctx, &goodsList, `select * from z_goods where id in 
+	if err = db.SqlDb.SelectContext(ctx, &goodsList, `select zu.id as uid, zu.name as uname, zg.id, zg.name, zg.price, zg.detail, zg.cover, zg.create_time from z_user zu right join
+    (select id, uid, name, price, detail, cover, create_time from z_goods) zg on zu.id = zg.uid where zg.id in 
 (select t.id from (select id from z_goods limit ?, ?) as t)`, page, count); err != nil {
 		misc.Logger.Warn("GetGoods err", zap.Error(err))
 		return nil, err
@@ -147,9 +142,10 @@ func GetGoodsDetail(ctx context.Context, gid int32) (Goods, error) {
 		return Goods{}, err
 	}
 
-	row := tx.QueryRowContext(ctx, `select * from z_goods where id = ?`, gid)
+	row := tx.QueryRowContext(ctx, `select zu.id as uid, zu.name as uname, zg.id, zg.name, zg.price, zg.detail, zg.cover, zg.create_time from z_user zu right join
+    (select id, uid, name, price, detail, cover, create_time from z_goods where id = ?) zg on zu.id = zg.uid`, gid)
 
-	if err = row.Scan(&goods.Id, &goods.UserId, &goods.Name, &goods.Uname, &goods.Price, &goods.Detail, &goods.Cover, &goods.CreateTime); err != nil {
+	if err = row.Scan(&goods.UserId, &goods.Uname, &goods.Id, &goods.Name, &goods.Price, &goods.Detail, &goods.Cover, &goods.CreateTime); err != nil {
 		_ = tx.Rollback()
 		return Goods{}, err
 	}
@@ -183,7 +179,8 @@ func GetGoodsDetail(ctx context.Context, gid int32) (Goods, error) {
 func GetGoodsByName(ctx context.Context, name string) ([]Goods, error) {
 	var goodList []Goods
 	var err error
-	if err = db.SqlDb.SelectContext(ctx, &goodList, `select * from z_goods where name like ?`,
+	if err = db.SqlDb.SelectContext(ctx, &goodList, `select zu.id as uid, zu.name as uname, zg.id, zg.name, zg.price, zg.detail, zg.cover, zg.create_time from z_user zu right join
+    (select id, uid, name, price, detail, cover, create_time from z_goods where name like ?) zg on zu.id = zg.uid`,
 		fmt.Sprintf("%%%s%%", name)); err != nil {
 		misc.Logger.Warn("GetGoods err", zap.Error(err))
 		return nil, err

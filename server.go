@@ -27,6 +27,8 @@ func main() {
 	defer stop()
 	misc.Init()
 	process()
+	handle.TaskAddOrder(ctx)
+	handle.TaskUpdateOrder(ctx)
 	<-ctx.Done()
 	handle.StopServer()
 	misc.Logger.Info("zu_logic exit")

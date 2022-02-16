@@ -22,6 +22,18 @@ type Order struct {
 	Time         time.Time `json:"time" db:"time"`
 }
 
+type RedisOrderAdd struct {
+	BuyId  int32
+	SellId int32
+	GId    int32
+	Status OrderStatus
+}
+
+type RedisOrderUpdate struct {
+	OrderId int32
+	Status  OrderStatus
+}
+
 type OrderStatus int32
 
 const (
@@ -101,6 +113,16 @@ func UpdateOrder(ctx context.Context, id int32, status OrderStatus) error {
 	var err error
 	if _, err = db.SqlDb.ExecContext(ctx, `update z_order set status = ? where id = ?`, int32(status), id); err != nil {
 		misc.Logger.Error("update order err", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
+//DeleteOrder 删除订单
+func DeleteOrder(ctx context.Context, id int32) error {
+	var err error
+	if _, err = db.SqlDb.ExecContext(ctx, `delete from z_order where id = ?`, id); err != nil {
+		misc.Logger.Error("delete order err", zap.Error(err))
 		return err
 	}
 	return nil

@@ -2,6 +2,7 @@ package handle
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/dopamine-joker/zu_logic/db"
@@ -11,6 +12,8 @@ import (
 	"github.com/fatih/structs"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"log"
 	"os"
@@ -100,6 +103,10 @@ func (r *RpcLogicServer) Login(ctx context.Context, request *proto.LoginRequest)
 
 //TokenLogin 使用token登陆
 func (r *RpcLogicServer) TokenLogin(ctx context.Context, request *proto.TokenLoginRequest) (*proto.TokenLoginResponse, error) {
+
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(attribute.String("token", request.GetToken()))
+
 	response := &proto.TokenLoginResponse{
 		Code: misc.CodeFail,
 	}
@@ -478,14 +485,29 @@ func (r *RpcLogicServer) AddOrder(ctx context.Context, req *proto.AddOrderReques
 		Code: misc.CodeFail,
 	}
 
-	oid, err := dao.AddOrder(ctx, req.Buyid, req.Sellid, req.Gid, dao.COMMIT)
+	// 往redis添加记录
+	redisOrder := dao.RedisOrderAdd{
+		BuyId:  req.Buyid,
+		SellId: req.Sellid,
+		GId:    req.Gid,
+		Status: dao.COMMIT,
+	}
+	addOrderMsg, err := json.Marshal(redisOrder)
 	if err != nil {
+		return response, err
+	}
+	if err := db.RedisClient.LPush(ctx, db.RedisOrderAdd, addOrderMsg).Err(); err != nil {
 		misc.Logger.Error("add order err", zap.Error(err))
 		return response, err
 	}
 
+	//oid, err := dao.AddOrder(ctx, req.Buyid, req.Sellid, req.Gid, dao.COMMIT)
+	//if err != nil {
+	//	misc.Logger.Error("add order err", zap.Error(err))
+	//	return response, err
+	//}
+
 	response.Code = misc.CodeSuccess
-	response.Oid = oid
 	return response, nil
 }
 
@@ -562,10 +584,25 @@ func (r *RpcLogicServer) UpdateOrder(ctx context.Context, req *proto.UpdateOrder
 
 	status := dao.OrderStatus(req.Status)
 
-	if err := dao.UpdateOrder(ctx, req.Id, status); err != nil {
-		misc.Logger.Error("update order err", zap.Error(err))
+	redisOrder := dao.RedisOrderUpdate{
+		OrderId: req.Id,
+		Status:  status,
+	}
+	orderUpdateMsg, err := json.Marshal(redisOrder)
+	if err != nil {
 		return response, err
 	}
+	if err := db.RedisClient.LPush(ctx, db.RedisOrderUpdate, orderUpdateMsg).Err(); err != nil {
+		misc.Logger.Error("add order err", zap.Error(err))
+		return response, err
+	}
+
+	misc.Logger.Info("put update order to redis", zap.Int32("orderId", req.Id))
+
+	//if err := dao.UpdateOrder(ctx, req.Id, status); err != nil {
+	//	misc.Logger.Error("update order err", zap.Error(err))
+	//	return response, err
+	//}
 
 	response.Code = misc.CodeSuccess
 	return response, nil
