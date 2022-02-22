@@ -21,6 +21,16 @@ service RpcLogicService {
   rpc GetSellOrder(GetSellOrderRequest) returns (GetSellOrderResponse);
   rpc UpdateOrder(UpdateOrderRequest) returns (UpdateOrderResponse);
   rpc UploadFace(UploadFaceRequest) returns (UploadFaceResponse);
+  rpc VoiceToTxt(VoiceToTxtRequest) returns (VoiceToTxtResponse);
+}
+
+message VoiceToTxtRequest {
+  FileStream voiceFile = 1;
+}
+
+message VoiceToTxtResponse {
+  int32 code = 1;
+  string txt = 2;
 }
 
 message UpdateUserRequest {
@@ -167,13 +177,13 @@ message UploadRequest {
   string Name = 2;
   string Price = 3;
   string detail = 4;
-  PicStream cover = 5;
-  repeated PicStream picList = 6;
+  FileStream cover = 5;
+  repeated FileStream picList = 6;
 }
 
 message UploadFaceRequest {
   int32 Uid = 1;
-  PicStream pic = 2;
+  FileStream pic = 2;
 }
 
 message UploadFaceResponse {
@@ -181,7 +191,7 @@ message UploadFaceResponse {
   string path = 2;
 }
 
-message PicStream {
+message FileStream {
   string name = 1;    //图片名字
   bytes Content = 2;
 }

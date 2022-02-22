@@ -242,11 +242,12 @@ const (
 	fileNamePrefix  = "pic_"
 	coverNamePrefix = "cover_"
 	facePrefix      = "face_"
+	voicePrefix     = "voice_"
 	tmpFilePrePath  = "./upload/"
 )
 
-//writePic 根据路径保存图片到本地
-func writePic(ctx context.Context, file *proto.PicStream, namePrefix string) (string, error) {
+//writeFile 根据路径保存图片到本地
+func writeFile(ctx context.Context, file *proto.FileStream, namePrefix string) (key string, path string, err error) {
 	//得到图片的类型,png,jpg,jpeg等
 	fileType := strings.Split(file.GetName(), ".")[1]
 	name := fmt.Sprintf("%s.%s", uuid.New().String(), fileType)
@@ -257,21 +258,21 @@ func writePic(ctx context.Context, file *proto.PicStream, namePrefix string) (st
 		_ = os.Remove(tmpFile.Name())
 	}()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	//内容写到临时文件里
 	if _, err = tmpFile.Write(file.Content); err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	//临时文件上传cos
 	res, _, err := misc.CosClient.Object.Upload(ctx, name, tmpFile.Name(), nil)
 	if err != nil {
 		misc.Logger.Error("cos upload err", zap.Error(err))
-		return "", err
+		return "", "", err
 	}
 
-	return res.Location, nil
+	return name, res.Location, nil
 }
 
 func (r *RpcLogicServer) UploadFace(ctx context.Context, req *proto.UploadFaceRequest) (*proto.UploadFaceResponse, error) {
@@ -279,7 +280,7 @@ func (r *RpcLogicServer) UploadFace(ctx context.Context, req *proto.UploadFaceRe
 		Code: misc.CodeFail,
 	}
 
-	facePath, err := writePic(ctx, req.Pic, facePrefix)
+	_, facePath, err := writeFile(ctx, req.Pic, facePrefix)
 	if err != nil {
 		return response, err
 	}
@@ -295,6 +296,35 @@ func (r *RpcLogicServer) UploadFace(ctx context.Context, req *proto.UploadFaceRe
 	return response, nil
 }
 
+func (r *RpcLogicServer) VoiceToTxt(ctx context.Context, req *proto.VoiceToTxtRequest) (*proto.VoiceToTxtResponse, error) {
+	response := &proto.VoiceToTxtResponse{
+		Code: misc.CodeFail,
+	}
+	// 写cos
+	key, path, err := writeFile(ctx, req.VoiceFile, voicePrefix)
+	if err != nil {
+		return response, err
+	}
+	// 调sdk包接口
+	txt, err := processVoice(path)
+	if err != nil {
+		return response, err
+	}
+	// 删除cos相关文件
+	removeCosVoice(ctx, key)
+	// 封装文字
+	response.Code = misc.CodeSuccess
+	response.Txt = txt
+	return response, nil
+}
+
+func removeCosVoice(ctx context.Context, key string) {
+	_, err := misc.CosClient.Object.Delete(ctx, key)
+	if err != nil {
+		misc.Logger.Error("cos delete err", zap.Error(err))
+	}
+}
+
 //UploadPic 上传图片到logic
 func (r *RpcLogicServer) UploadPic(ctx context.Context, req *proto.UploadRequest) (*proto.UploadResponse, error) {
 	response := &proto.UploadResponse{
@@ -304,7 +334,7 @@ func (r *RpcLogicServer) UploadPic(ctx context.Context, req *proto.UploadRequest
 	//写图片到cos，并把url保存起来
 	var fileUrlList []string
 	for _, file := range req.PicList {
-		path, err := writePic(ctx, file, fileNamePrefix)
+		_, path, err := writeFile(ctx, file, fileNamePrefix)
 		if err != nil {
 			return response, err
 		}
@@ -312,7 +342,7 @@ func (r *RpcLogicServer) UploadPic(ctx context.Context, req *proto.UploadRequest
 	}
 
 	//提取封面图片
-	coverPath, err := writePic(ctx, req.Cover, coverNamePrefix)
+	_, coverPath, err := writeFile(ctx, req.Cover, coverNamePrefix)
 	if err != nil {
 		return response, err
 	}

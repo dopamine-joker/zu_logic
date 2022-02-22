@@ -8,7 +8,7 @@ import (
 
 var Logger *zap.Logger
 
-func InitLogger() {
+func initLogger() {
 	hook := &lumberjack.Logger{
 		Filename: "./log/zu_logic",
 		MaxSize:  128,

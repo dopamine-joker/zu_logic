@@ -35,6 +35,7 @@ type RpcLogicServiceClient interface {
 	GetSellOrder(ctx context.Context, in *GetSellOrderRequest, opts ...grpc.CallOption) (*GetSellOrderResponse, error)
 	UpdateOrder(ctx context.Context, in *UpdateOrderRequest, opts ...grpc.CallOption) (*UpdateOrderResponse, error)
 	UploadFace(ctx context.Context, in *UploadFaceRequest, opts ...grpc.CallOption) (*UploadFaceResponse, error)
+	VoiceToTxt(ctx context.Context, in *VoiceToTxtRequest, opts ...grpc.CallOption) (*VoiceToTxtResponse, error)
 }
 
 type rpcLogicServiceClient struct {
@@ -198,6 +199,15 @@ func (c *rpcLogicServiceClient) UploadFace(ctx context.Context, in *UploadFaceRe
 	return out, nil
 }
 
+func (c *rpcLogicServiceClient) VoiceToTxt(ctx context.Context, in *VoiceToTxtRequest, opts ...grpc.CallOption) (*VoiceToTxtResponse, error) {
+	out := new(VoiceToTxtResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/VoiceToTxt", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RpcLogicServiceServer is the server API for RpcLogicService service.
 // All implementations must embed UnimplementedRpcLogicServiceServer
 // for forward compatibility
@@ -219,6 +229,7 @@ type RpcLogicServiceServer interface {
 	GetSellOrder(context.Context, *GetSellOrderRequest) (*GetSellOrderResponse, error)
 	UpdateOrder(context.Context, *UpdateOrderRequest) (*UpdateOrderResponse, error)
 	UploadFace(context.Context, *UploadFaceRequest) (*UploadFaceResponse, error)
+	VoiceToTxt(context.Context, *VoiceToTxtRequest) (*VoiceToTxtResponse, error)
 	mustEmbedUnimplementedRpcLogicServiceServer()
 }
 
@@ -276,6 +287,9 @@ func (UnimplementedRpcLogicServiceServer) UpdateOrder(context.Context, *UpdateOr
 }
 func (UnimplementedRpcLogicServiceServer) UploadFace(context.Context, *UploadFaceRequest) (*UploadFaceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadFace not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) VoiceToTxt(context.Context, *VoiceToTxtRequest) (*VoiceToTxtResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VoiceToTxt not implemented")
 }
 func (UnimplementedRpcLogicServiceServer) mustEmbedUnimplementedRpcLogicServiceServer() {}
 
@@ -596,6 +610,24 @@ func _RpcLogicService_UploadFace_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RpcLogicService_VoiceToTxt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VoiceToTxtRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).VoiceToTxt(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/VoiceToTxt",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).VoiceToTxt(ctx, req.(*VoiceToTxtRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RpcLogicService_ServiceDesc is the grpc.ServiceDesc for RpcLogicService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -670,6 +702,10 @@ var RpcLogicService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UploadFace",
 			Handler:    _RpcLogicService_UploadFace_Handler,
+		},
+		{
+			MethodName: "VoiceToTxt",
+			Handler:    _RpcLogicService_VoiceToTxt_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

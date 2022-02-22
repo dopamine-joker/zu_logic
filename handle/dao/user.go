@@ -29,8 +29,8 @@ func AddUser(ctx context.Context, email, name, password string) (userId int32, e
 	if oUser.Id > 0 {
 		return oUser.Id, errors.New("the user already exists")
 	}
-	if _, err = db.SqlDb.QueryContext(ctx, `insert into z_user(id, email, name, password, face, create_time) 
-values(null, ?, ?, ?, '', ?)`, email, name, password, time.Now()); err != nil {
+	if _, err = db.SqlDb.QueryContext(ctx, `insert into z_user(id, email, name, password, create_time) 
+values(null, ?, ?, ?, ?)`, email, name, password, time.Now()); err != nil {
 		return -1, err
 	}
 	u := GetUserByEmail(ctx, email)

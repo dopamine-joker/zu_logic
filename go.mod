@@ -11,6 +11,8 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/spf13/viper v1.9.0
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/asr v1.0.348
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.348
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.33
 	go.etcd.io/etcd/client/v3 v3.5.1
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.29.0

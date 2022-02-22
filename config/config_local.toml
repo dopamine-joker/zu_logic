@@ -1,18 +1,18 @@
 [redis]
-address = "172.17.0.6"
+address = "127.0.0.1"
 port = 6379
 passWord = "doper"
 db = 0
 
 [mysql]
-address = "172.17.16.10"
+address = "192.168.0.111"
 port = 3306
 userName = "root"
 passWord = "123456"
 dbName = "zuzuxia"
 
 [etcd]
-host = ["172.17.0.6:49166", "172.17.0.6:49168", "172.17.0.6:49170"]
+host = ["192.168.0.111:49166", "192.168.0.111:49168", "192.168.0.111:49170"]
 basePath = "zuzuxia_srv"
 serverPathLogic = "ZuLogicRpc"
 timeout = 5
@@ -23,5 +23,5 @@ rpcAddress = ["tcp@127.0.0.1:6900", "tcp@127.0.0.1:6901"]
 
 [jaeger]
 scheme = "http://"
-host = "172.17.0.6:14268"
+host = "192.168.0.111:14268"
 path = "/api/traces"
