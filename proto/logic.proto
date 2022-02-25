@@ -281,9 +281,13 @@ message Goods {
 message User {
   int32 Id = 1;
   string Email = 2;
-  string Name = 3;
-  string Face = 4;
+  string phone = 3;
+  string Name = 4;
+  string Face = 5;
+  string school = 6;
+  int32 sex = 7;
 }
+
 
 message UploadRequest {
   int32 Uid = 1;

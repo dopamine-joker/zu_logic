@@ -93,10 +93,13 @@ func (r *RpcLogicServer) Login(ctx context.Context, request *proto.LoginRequest)
 	response.Code = misc.CodeSuccess
 	response.AuthToken = tokenId
 	response.User = &proto.User{
-		Id:    user.Id,
-		Email: user.Email,
-		Name:  user.Name,
-		Face:  user.Face,
+		Id:     user.Id,
+		Email:  user.Email,
+		Phone:  user.Phone,
+		Name:   user.Name,
+		Face:   user.Face,
+		School: user.School,
+		Sex:    user.Sex,
 	}
 	return response, nil
 }
@@ -141,6 +144,14 @@ func (r *RpcLogicServer) TokenLogin(ctx context.Context, request *proto.TokenLog
 	user.Email = userDataMap["Email"]
 	user.Name = userDataMap["Name"]
 	user.Face = userDataMap["Face"]
+	user.Phone = userDataMap["Phone"]
+	user.School = userDataMap["School"]
+	sex, err := strconv.ParseInt(userDataMap["Sex"], 10, 32)
+	if err != nil {
+		misc.Logger.Error("redis get user info err", zap.Error(err))
+		return response, err
+	}
+	user.Sex = int32(sex)
 
 	response.Code = misc.CodeSuccess
 	response.AuthToken = tokenId
