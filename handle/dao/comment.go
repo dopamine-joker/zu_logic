@@ -65,7 +65,7 @@ right join (select * from z_comment zc where uid = ?) zc on zg.id = zc.gid`, use
 func GetCommentByGoodsId(ctx context.Context, gid int32) ([]GoodsComment, error) {
 	var commentList []GoodsComment
 	var err error
-	if err = db.SqlDb.SelectContext(ctx, &commentList, `select zc.id, zc.uid, zc.gid, zc.oid, zc.content, zc.level, zc.time, zu.name from z_user zu right join 
+	if err = db.SqlDb.SelectContext(ctx, &commentList, `select zc.id, zc.uid, zc.gid, zc.oid, zc.content, zc.level, zc.time, zu.name as uname from z_user zu right join 
     (select * from z_comment where gid = ?) zc on zc.uid = zu.id;`, gid); err != nil {
 		misc.Logger.Error("get comment list by gid err", zap.Error(err))
 		return nil, err
