@@ -25,7 +25,7 @@ type Goods struct {
 
 type PicGoods struct {
 	Id      int32  `json:"id" db:"id"`       //图片id
-	UserId  int32  `json:"userId" db:"uId"`  //用户的id
+	UserId  int32  `json:"userId" db:"UId"`  //用户的id
 	GoodsId int32  `json:"goodsId" db:"gId"` //对应物品的id
 	Path    string `json:"path" db:"path"`   //图片的路径
 }
@@ -57,7 +57,7 @@ values(null, ?, ?, ?, ?, ?, ?)`, uid, name, price, detail, coverPath, time.Now()
 	log.Println("goodsId", goodsId)
 
 	for _, path := range filePathList {
-		if _, err = tx.ExecContext(ctx, `insert into z_goods_pic(id, uId, gId, path) values(null, ?, ?, ?)`,
+		if _, err = tx.ExecContext(ctx, `insert into z_goods_pic(id, UId, gId, path) values(null, ?, ?, ?)`,
 			uid, goodsId, path); err != nil {
 			_ = tx.Rollback()
 			return -1, err

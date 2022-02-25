@@ -22,6 +22,112 @@ service RpcLogicService {
   rpc UpdateOrder(UpdateOrderRequest) returns (UpdateOrderResponse);
   rpc UploadFace(UploadFaceRequest) returns (UploadFaceResponse);
   rpc VoiceToTxt(VoiceToTxtRequest) returns (VoiceToTxtResponse);
+  rpc AddFavorites(AddFavoritesRequest) returns (AddFavoritesResponse);
+  rpc DeleteFavorites(DeleteFavoritesRequest) returns (DeleteFavoritesResponse);
+  rpc GetUserFavorites(GetUserFavoritesRequest) returns (GetUserFavoritesResponse);
+  rpc AddComment(AddCommentRequest) returns (AddCommentResponse);
+  rpc GetCommentByUserId(GetCommentByUserIdRequest) returns (GetCommentByUserIdResponse);
+  rpc GetCommentByGoodsId(GetCommentByGoodsIdRequest) returns(GetCommentByGoodsIdResponse);
+  rpc DeleteComment(DeleteCommentRequest) returns(DeleteCommentResponse);
+}
+
+message DeleteCommentRequest{
+  int32 cid = 1;
+}
+
+message DeleteCommentResponse {
+  int32 code = 1;
+}
+
+message GetCommentByGoodsIdRequest {
+  int32 gid = 1;
+}
+
+message GetCommentByGoodsIdResponse {
+  int32 code = 1;
+  repeated GoodsComment commentList = 2;
+}
+
+message GoodsComment {
+  int32 id = 1;
+  int32 uid = 2;
+  int32 gid = 3;
+  int32 oid = 4;
+  string content = 5;
+  int32 level = 6;
+  int64 time = 7;
+  string uname = 8;
+}
+
+message GetCommentByUserIdRequest {
+  int32 uid = 1;
+}
+
+message GetCommentByUserIdResponse {
+  int32 code = 1;
+  repeated UserComment userCommentList = 2;
+}
+
+message UserComment {
+  int32 id = 1;
+  int32 uid = 2;
+  int32 gid = 3;
+  int32 oid = 4;
+  string content = 5;
+  int32 level = 6;
+  int64 time = 7;
+  string name = 8;
+  string price = 9;
+  string cover = 10;
+}
+
+message AddCommentRequest {
+  int32 uid = 1;
+  int32 gid = 2;
+  int32 oid = 3;
+  int32 level = 4;
+  string content = 5;
+}
+
+message AddCommentResponse {
+  int32 code = 1;
+  int32 cid = 2;
+}
+
+message GetUserFavoritesRequest {
+  int32 uid = 1;
+}
+
+message GetUserFavoritesResponse {
+  int32 code = 1;
+  repeated UserFavorites userFavoritesList = 2;
+}
+
+message UserFavorites {
+  int32 id = 1;
+  int32 uid = 2;
+  int32 gid = 3;
+  string name = 4;
+  string price = 5;
+  string cover = 6;
+}
+
+message DeleteFavoritesRequest {
+  int32 fid = 1;
+}
+
+message DeleteFavoritesResponse {
+  int32 code = 1;
+}
+
+message AddFavoritesRequest {
+  int32 uid = 1;
+  int32 gid = 2;
+}
+
+message AddFavoritesResponse {
+  int32 code = 1;
+  int32 fid = 2;
 }
 
 message VoiceToTxtRequest {

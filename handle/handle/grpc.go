@@ -637,3 +637,137 @@ func (r *RpcLogicServer) UpdateOrder(ctx context.Context, req *proto.UpdateOrder
 	response.Code = misc.CodeSuccess
 	return response, nil
 }
+
+func (r *RpcLogicServer) AddFavorites(ctx context.Context, req *proto.AddFavoritesRequest) (*proto.AddFavoritesResponse, error) {
+	response := &proto.AddFavoritesResponse{
+		Code: misc.CodeFail,
+	}
+
+	fid, err := dao.AddFavorites(ctx, req.Uid, req.Gid)
+	if err != nil {
+		misc.Logger.Error("add favorites err", zap.Error(err))
+		return response, err
+	}
+
+	response.Code = misc.CodeSuccess
+	response.Fid = fid
+	return response, nil
+}
+
+func (r *RpcLogicServer) DeleteFavorites(ctx context.Context, req *proto.DeleteFavoritesRequest) (*proto.DeleteFavoritesResponse, error) {
+	response := &proto.DeleteFavoritesResponse{
+		Code: misc.CodeFail,
+	}
+	if err := dao.DeleteFavorites(ctx, req.Fid); err != nil {
+		return response, err
+	}
+	response.Code = misc.CodeSuccess
+	return response, nil
+}
+
+func (r *RpcLogicServer) GetUserFavorites(ctx context.Context, req *proto.GetUserFavoritesRequest) (*proto.GetUserFavoritesResponse, error) {
+	response := &proto.GetUserFavoritesResponse{
+		Code: misc.CodeFail,
+	}
+	list, err := dao.GetUserFavorites(ctx, req.Uid)
+	if err != nil {
+		misc.Logger.Error("get user favorites err", zap.Error(err))
+		return response, err
+	}
+	var favoritesList []*proto.UserFavorites
+	for _, favorites := range list {
+		favoritesList = append(favoritesList, &proto.UserFavorites{
+			Id:    favorites.Id,
+			Uid:   favorites.UId,
+			Gid:   favorites.GId,
+			Name:  favorites.Name,
+			Price: strconv.FormatFloat(favorites.Price, 'f', 2, 32),
+			Cover: favorites.Cover,
+		})
+	}
+	response.UserFavoritesList = favoritesList
+	response.Code = misc.CodeSuccess
+	return response, nil
+}
+
+func (r *RpcLogicServer) AddComment(ctx context.Context, req *proto.AddCommentRequest) (*proto.AddCommentResponse, error) {
+	response := &proto.AddCommentResponse{
+		Code: misc.CodeFail,
+	}
+	cid, err := dao.AddComment(ctx, req.Uid, req.Gid, req.Oid, req.Level, req.Content)
+	if err != nil {
+		misc.Logger.Error("add comment err", zap.Error(err))
+		return response, err
+	}
+	response.Code = misc.CodeSuccess
+	response.Cid = cid
+	return response, nil
+}
+
+func (r *RpcLogicServer) GetCommentByUserId(ctx context.Context, req *proto.GetCommentByUserIdRequest) (*proto.GetCommentByUserIdResponse, error) {
+	response := &proto.GetCommentByUserIdResponse{
+		Code: misc.CodeFail,
+	}
+	list, err := dao.GetCommentByUserId(ctx, req.Uid)
+	if err != nil {
+		misc.Logger.Error("get comment list by userId err", zap.Error(err))
+		return response, err
+	}
+	var userCommentList []*proto.UserComment
+	for _, comment := range list {
+		userCommentList = append(userCommentList, &proto.UserComment{
+			Id:      comment.Id,
+			Uid:     comment.UId,
+			Gid:     comment.GId,
+			Oid:     comment.Oid,
+			Content: comment.Content,
+			Level:   comment.Level,
+			Time:    comment.TIme.Unix(),
+			Name:    comment.Name,
+			Price:   strconv.FormatFloat(comment.Price, 'f', 2, 32),
+			Cover:   comment.Cover,
+		})
+	}
+	response.Code = misc.CodeSuccess
+	response.UserCommentList = userCommentList
+	return response, nil
+}
+
+func (r *RpcLogicServer) GetCommentByGoodsId(ctx context.Context, req *proto.GetCommentByGoodsIdRequest) (*proto.GetCommentByGoodsIdResponse, error) {
+	response := &proto.GetCommentByGoodsIdResponse{
+		Code: misc.CodeFail,
+	}
+	list, err := dao.GetCommentByGoodsId(ctx, req.Gid)
+	if err != nil {
+		misc.Logger.Error("get comment by goods id err", zap.Error(err))
+		return response, err
+	}
+	var commentList []*proto.GoodsComment
+	for _, comment := range list {
+		commentList = append(commentList, &proto.GoodsComment{
+			Id:      comment.Id,
+			Uid:     comment.UId,
+			Gid:     comment.GId,
+			Oid:     comment.Oid,
+			Content: comment.Content,
+			Level:   comment.Level,
+			Time:    comment.TIme.Unix(),
+			Uname:   comment.UserName,
+		})
+	}
+	response.Code = misc.CodeSuccess
+	response.CommentList = commentList
+	return response, nil
+}
+
+func (r *RpcLogicServer) DeleteComment(ctx context.Context, req *proto.DeleteCommentRequest) (*proto.DeleteCommentResponse, error) {
+	response := &proto.DeleteCommentResponse{
+		Code: misc.CodeFail,
+	}
+	if err := dao.DeleteComment(ctx, req.Cid); err != nil {
+		misc.Logger.Error("delete comment err", zap.Error(err))
+		return response, err
+	}
+	response.Code = misc.CodeSuccess
+	return response, nil
+}

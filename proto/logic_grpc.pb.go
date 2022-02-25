@@ -36,6 +36,13 @@ type RpcLogicServiceClient interface {
 	UpdateOrder(ctx context.Context, in *UpdateOrderRequest, opts ...grpc.CallOption) (*UpdateOrderResponse, error)
 	UploadFace(ctx context.Context, in *UploadFaceRequest, opts ...grpc.CallOption) (*UploadFaceResponse, error)
 	VoiceToTxt(ctx context.Context, in *VoiceToTxtRequest, opts ...grpc.CallOption) (*VoiceToTxtResponse, error)
+	AddFavorites(ctx context.Context, in *AddFavoritesRequest, opts ...grpc.CallOption) (*AddFavoritesResponse, error)
+	DeleteFavorites(ctx context.Context, in *DeleteFavoritesRequest, opts ...grpc.CallOption) (*DeleteFavoritesResponse, error)
+	GetUserFavorites(ctx context.Context, in *GetUserFavoritesRequest, opts ...grpc.CallOption) (*GetUserFavoritesResponse, error)
+	AddComment(ctx context.Context, in *AddCommentRequest, opts ...grpc.CallOption) (*AddCommentResponse, error)
+	GetCommentByUserId(ctx context.Context, in *GetCommentByUserIdRequest, opts ...grpc.CallOption) (*GetCommentByUserIdResponse, error)
+	GetCommentByGoodsId(ctx context.Context, in *GetCommentByGoodsIdRequest, opts ...grpc.CallOption) (*GetCommentByGoodsIdResponse, error)
+	DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*DeleteCommentResponse, error)
 }
 
 type rpcLogicServiceClient struct {
@@ -208,6 +215,69 @@ func (c *rpcLogicServiceClient) VoiceToTxt(ctx context.Context, in *VoiceToTxtRe
 	return out, nil
 }
 
+func (c *rpcLogicServiceClient) AddFavorites(ctx context.Context, in *AddFavoritesRequest, opts ...grpc.CallOption) (*AddFavoritesResponse, error) {
+	out := new(AddFavoritesResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/AddFavorites", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcLogicServiceClient) DeleteFavorites(ctx context.Context, in *DeleteFavoritesRequest, opts ...grpc.CallOption) (*DeleteFavoritesResponse, error) {
+	out := new(DeleteFavoritesResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/DeleteFavorites", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcLogicServiceClient) GetUserFavorites(ctx context.Context, in *GetUserFavoritesRequest, opts ...grpc.CallOption) (*GetUserFavoritesResponse, error) {
+	out := new(GetUserFavoritesResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/GetUserFavorites", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcLogicServiceClient) AddComment(ctx context.Context, in *AddCommentRequest, opts ...grpc.CallOption) (*AddCommentResponse, error) {
+	out := new(AddCommentResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/AddComment", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcLogicServiceClient) GetCommentByUserId(ctx context.Context, in *GetCommentByUserIdRequest, opts ...grpc.CallOption) (*GetCommentByUserIdResponse, error) {
+	out := new(GetCommentByUserIdResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/GetCommentByUserId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcLogicServiceClient) GetCommentByGoodsId(ctx context.Context, in *GetCommentByGoodsIdRequest, opts ...grpc.CallOption) (*GetCommentByGoodsIdResponse, error) {
+	out := new(GetCommentByGoodsIdResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/GetCommentByGoodsId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcLogicServiceClient) DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*DeleteCommentResponse, error) {
+	out := new(DeleteCommentResponse)
+	err := c.cc.Invoke(ctx, "/proto.RpcLogicService/DeleteComment", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RpcLogicServiceServer is the server API for RpcLogicService service.
 // All implementations must embed UnimplementedRpcLogicServiceServer
 // for forward compatibility
@@ -230,6 +300,13 @@ type RpcLogicServiceServer interface {
 	UpdateOrder(context.Context, *UpdateOrderRequest) (*UpdateOrderResponse, error)
 	UploadFace(context.Context, *UploadFaceRequest) (*UploadFaceResponse, error)
 	VoiceToTxt(context.Context, *VoiceToTxtRequest) (*VoiceToTxtResponse, error)
+	AddFavorites(context.Context, *AddFavoritesRequest) (*AddFavoritesResponse, error)
+	DeleteFavorites(context.Context, *DeleteFavoritesRequest) (*DeleteFavoritesResponse, error)
+	GetUserFavorites(context.Context, *GetUserFavoritesRequest) (*GetUserFavoritesResponse, error)
+	AddComment(context.Context, *AddCommentRequest) (*AddCommentResponse, error)
+	GetCommentByUserId(context.Context, *GetCommentByUserIdRequest) (*GetCommentByUserIdResponse, error)
+	GetCommentByGoodsId(context.Context, *GetCommentByGoodsIdRequest) (*GetCommentByGoodsIdResponse, error)
+	DeleteComment(context.Context, *DeleteCommentRequest) (*DeleteCommentResponse, error)
 	mustEmbedUnimplementedRpcLogicServiceServer()
 }
 
@@ -290,6 +367,27 @@ func (UnimplementedRpcLogicServiceServer) UploadFace(context.Context, *UploadFac
 }
 func (UnimplementedRpcLogicServiceServer) VoiceToTxt(context.Context, *VoiceToTxtRequest) (*VoiceToTxtResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VoiceToTxt not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) AddFavorites(context.Context, *AddFavoritesRequest) (*AddFavoritesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddFavorites not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) DeleteFavorites(context.Context, *DeleteFavoritesRequest) (*DeleteFavoritesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteFavorites not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) GetUserFavorites(context.Context, *GetUserFavoritesRequest) (*GetUserFavoritesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserFavorites not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) AddComment(context.Context, *AddCommentRequest) (*AddCommentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddComment not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) GetCommentByUserId(context.Context, *GetCommentByUserIdRequest) (*GetCommentByUserIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCommentByUserId not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) GetCommentByGoodsId(context.Context, *GetCommentByGoodsIdRequest) (*GetCommentByGoodsIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCommentByGoodsId not implemented")
+}
+func (UnimplementedRpcLogicServiceServer) DeleteComment(context.Context, *DeleteCommentRequest) (*DeleteCommentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteComment not implemented")
 }
 func (UnimplementedRpcLogicServiceServer) mustEmbedUnimplementedRpcLogicServiceServer() {}
 
@@ -628,6 +726,132 @@ func _RpcLogicService_VoiceToTxt_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RpcLogicService_AddFavorites_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddFavoritesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).AddFavorites(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/AddFavorites",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).AddFavorites(ctx, req.(*AddFavoritesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcLogicService_DeleteFavorites_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteFavoritesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).DeleteFavorites(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/DeleteFavorites",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).DeleteFavorites(ctx, req.(*DeleteFavoritesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcLogicService_GetUserFavorites_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserFavoritesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).GetUserFavorites(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/GetUserFavorites",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).GetUserFavorites(ctx, req.(*GetUserFavoritesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcLogicService_AddComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddCommentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).AddComment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/AddComment",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).AddComment(ctx, req.(*AddCommentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcLogicService_GetCommentByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCommentByUserIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).GetCommentByUserId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/GetCommentByUserId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).GetCommentByUserId(ctx, req.(*GetCommentByUserIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcLogicService_GetCommentByGoodsId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCommentByGoodsIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).GetCommentByGoodsId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/GetCommentByGoodsId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).GetCommentByGoodsId(ctx, req.(*GetCommentByGoodsIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcLogicService_DeleteComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteCommentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcLogicServiceServer).DeleteComment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.RpcLogicService/DeleteComment",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcLogicServiceServer).DeleteComment(ctx, req.(*DeleteCommentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RpcLogicService_ServiceDesc is the grpc.ServiceDesc for RpcLogicService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -706,6 +930,34 @@ var RpcLogicService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VoiceToTxt",
 			Handler:    _RpcLogicService_VoiceToTxt_Handler,
+		},
+		{
+			MethodName: "AddFavorites",
+			Handler:    _RpcLogicService_AddFavorites_Handler,
+		},
+		{
+			MethodName: "DeleteFavorites",
+			Handler:    _RpcLogicService_DeleteFavorites_Handler,
+		},
+		{
+			MethodName: "GetUserFavorites",
+			Handler:    _RpcLogicService_GetUserFavorites_Handler,
+		},
+		{
+			MethodName: "AddComment",
+			Handler:    _RpcLogicService_AddComment_Handler,
+		},
+		{
+			MethodName: "GetCommentByUserId",
+			Handler:    _RpcLogicService_GetCommentByUserId_Handler,
+		},
+		{
+			MethodName: "GetCommentByGoodsId",
+			Handler:    _RpcLogicService_GetCommentByGoodsId_Handler,
+		},
+		{
+			MethodName: "DeleteComment",
+			Handler:    _RpcLogicService_DeleteComment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
