@@ -63,7 +63,7 @@ func consumeAdd(ctx context.Context, msg string) error {
 		return err
 	}
 	misc.Logger.Info("push msg info", zap.Any("RedisMsg", m), zap.Any("redisOrder", m))
-	orderId, err := dao.AddOrder(ctx, m.BuyId, m.SellId, m.GId, m.Status)
+	orderId, err := dao.AddOrder(ctx, m.BuyId, m.SellId, m.GId, m.School, m.Status)
 	misc.Logger.Info("add order to sql", zap.Int32("orderId", orderId))
 	if err != nil {
 		return err

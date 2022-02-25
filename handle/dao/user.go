@@ -14,9 +14,12 @@ import (
 type User struct {
 	Id         int32     `json:"id" db:"id"`
 	Email      string    `json:"email" db:"email"`
+	Phone      string    `json:"phone" db:"phone"`
 	Name       string    `json:"name" db:"name"`
 	Password   string    `json:"password" db:"password"`
 	Face       string    `json:"face" db:"face"`
+	School     string    `json:"school" db:"school"`
+	Sex        int32     `json:"sex" db:"sex"`
 	CreateTime time.Time `json:"create_time" db:"create_time"`
 }
 
@@ -50,9 +53,9 @@ func GetUserByEmail(ctx context.Context, email string) User {
 }
 
 //UpdateUser 更新user
-func UpdateUser(ctx context.Context, email, name, password string, id int32) error {
-	if _, err := db.SqlDb.ExecContext(ctx, `update z_user set email = ?, name = ?, password = ? where id = ?`,
-		email, name, password, id); err != nil {
+func UpdateUser(ctx context.Context, email, phone, name, password, school string, sex, id int32) error {
+	if _, err := db.SqlDb.ExecContext(ctx, `update z_user set email = ?, name = ?, phone = ?, 
+                  password = ?, school = ?, sex = ? where id = ?`, email, name, phone, password, school, sex, id); err != nil {
 		misc.Logger.Warn("update user err, no this user", zap.String("email", email))
 		return err
 	}

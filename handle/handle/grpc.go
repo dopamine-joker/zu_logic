@@ -152,8 +152,7 @@ func (r *RpcLogicServer) UpdateUser(ctx context.Context, req *proto.UpdateUserRe
 	response := &proto.UpdateUserResponse{
 		Code: misc.CodeFail,
 	}
-
-	if err := dao.UpdateUser(ctx, req.Email, req.Name, req.Password, req.Uid); err != nil {
+	if err := dao.UpdateUser(ctx, req.Email, req.Phone, req.Name, req.Password, req.School, req.Sex, req.Uid); err != nil {
 		misc.Logger.Error("update user err", zap.Error(err))
 		return response, err
 	}
@@ -400,11 +399,12 @@ func (r *RpcLogicServer) GetGoods(ctx context.Context, req *proto.GetGoodsReques
 	for _, goods := range goodsList {
 		//增加到请求的商品列表
 		protoList = append(protoList, &proto.Goods{
-			Id:    goods.Id,
-			Name:  goods.Name,
-			Uname: goods.Uname,
-			Price: strconv.FormatFloat(goods.Price, 'f', 2, 32),
-			Cover: goods.Cover,
+			Id:      goods.Id,
+			Name:    goods.Name,
+			Uname:   goods.Uname,
+			Price:   strconv.FormatFloat(goods.Price, 'f', 2, 32),
+			SellNum: goods.SellNum,
+			Cover:   goods.Cover,
 		})
 	}
 
@@ -432,6 +432,7 @@ func (r *RpcLogicServer) UserGoods(ctx context.Context, req *proto.GetUserGoodsL
 			Name:       l.Name,
 			Uname:      l.Uname,
 			Price:      strconv.FormatFloat(l.Price, 'f', 2, 32),
+			SellNum:    l.SellNum,
 			Detail:     l.Detail,
 			Cover:      l.Cover,
 			CreateTime: l.CreateTime.Unix(),
@@ -469,6 +470,7 @@ func (r *RpcLogicServer) GetGoodsPic(ctx context.Context, req *proto.GetGoodsDet
 		Name:       goods.Name,
 		Uname:      goods.Uname,
 		Price:      strconv.FormatFloat(goods.Price, 'f', 2, 32),
+		SellNum:    goods.SellNum,
 		Detail:     goods.Detail,
 		Cover:      goods.Cover,
 		CreateTime: goods.CreateTime.Unix(),
@@ -498,6 +500,7 @@ func (r *RpcLogicServer) SearchGoods(ctx context.Context, req *proto.SearchGoods
 			Name:       l.Name,
 			Uname:      l.Uname,
 			Price:      strconv.FormatFloat(l.Price, 'f', 2, 32),
+			SellNum:    l.SellNum,
 			Detail:     l.Detail,
 			Cover:      l.Cover,
 			CreateTime: l.CreateTime.Unix(),
@@ -520,6 +523,7 @@ func (r *RpcLogicServer) AddOrder(ctx context.Context, req *proto.AddOrderReques
 		BuyId:  req.Buyid,
 		SellId: req.Sellid,
 		GId:    req.Gid,
+		School: req.School,
 		Status: dao.COMMIT,
 	}
 	addOrderMsg, err := json.Marshal(redisOrder)
@@ -562,6 +566,7 @@ func (r *RpcLogicServer) GetBuyOrder(ctx context.Context, req *proto.GetBuyOrder
 			SellName: o.SellUserName,
 			GId:      o.GId,
 			Gname:    o.GName,
+			School:   o.School,
 			Price:    strconv.FormatFloat(o.Price, 'f', 2, 32),
 			Cover:    o.Cover,
 			Status:   o.Status,
@@ -595,6 +600,7 @@ func (r *RpcLogicServer) GetSellOrder(ctx context.Context, req *proto.GetSellOrd
 			SellName: o.SellUserName,
 			GId:      o.GId,
 			Gname:    o.GName,
+			School:   o.School,
 			Price:    strconv.FormatFloat(o.Price, 'f', 2, 32),
 			Cover:    o.Cover,
 			Status:   o.Status,

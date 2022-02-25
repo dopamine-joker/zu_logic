@@ -18,6 +18,7 @@ type Order struct {
 	SellUserName string    `json:"sname" db:"sname"`
 	GId          int32     `json:"gid" db:"gid"`
 	GName        string    `json:"gname" db:"gname"`
+	School       string    `json:"school" db:"school"`
 	Price        float64   `json:"price" db:"price"`
 	Cover        string    `json:"cover" db:"cover"`
 	Status       int32     `json:"status" db:"status"`
@@ -28,6 +29,7 @@ type RedisOrderAdd struct {
 	BuyId  int32
 	SellId int32
 	GId    int32
+	School string
 	Status OrderStatus
 }
 
@@ -45,7 +47,7 @@ const (
 )
 
 //AddOrder 增加一条订单信息
-func AddOrder(ctx context.Context, buyid, sellid, gid int32, status OrderStatus) (int32, error) {
+func AddOrder(ctx context.Context, buyid, sellid, gid int32, school string, status OrderStatus) (int32, error) {
 
 	tx, err := db.SqlDb.Begin()
 	if err != nil {
@@ -53,8 +55,8 @@ func AddOrder(ctx context.Context, buyid, sellid, gid int32, status OrderStatus)
 		return -1, err
 	}
 
-	res, err := tx.ExecContext(ctx, `insert into z_order(id, buyid, sellid, gid, status, time) values(null, ?, ?, ?, ?, ?);`,
-		buyid, sellid, gid, int32(status), time.Now())
+	res, err := tx.ExecContext(ctx, `insert into z_order(id, buyid, sellid, gid, school, status, time) values(null, ?, ?, ?, ?, ?, ?);`,
+		buyid, sellid, gid, school, int32(status), time.Now())
 	if err != nil {
 		_ = tx.Rollback()
 		misc.Logger.Error("add order err", zap.Error(err))

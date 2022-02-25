@@ -143,7 +143,10 @@ message UpdateUserRequest {
   int32 uid = 1;
   string email = 2;
   string name = 3;
-  string password = 4;
+  string phone = 4;
+  string password = 5;
+  string school = 6;
+  int32 sex = 7;
 }
 
 message UpdateUserResponse {
@@ -193,16 +196,18 @@ message Order {
   string sellName = 5;
   int32 GId = 6;
   string Gname = 7;
-  string price = 8;
-  string cover = 9;
-  int32 status = 10;
-  int64 time = 11;
+  string School = 8;
+  string price = 9;
+  string cover = 10;
+  int32 status = 11;
+  int64 time = 12;
 }
 
 message AddOrderRequest {
   int32 buyid = 1;
   int32 sellid = 2;
   int32 gid = 3;
+  string school = 4;
 }
 
 message AddOrderResponse {
@@ -243,9 +248,10 @@ message GoodsDetail {
   string name = 3;
   string uname = 4;
   string price = 5;
-  string detail = 6;
-  string cover = 7;
-  int64 create_time = 8;
+  int32 sell_num = 6;
+  string detail = 7;
+  string cover = 8;
+  int64 create_time = 9;
 }
 
 message Pic {
@@ -268,7 +274,8 @@ message Goods {
   string Name = 2;  //商品名称
   string Uname = 3; //商家名称
   string Price = 4; //价格
-  string Cover = 5; //封面url
+  int32 sellNum = 5;
+  string Cover = 6; //封面url
 }
 
 message User {
