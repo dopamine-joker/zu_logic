@@ -366,9 +366,10 @@ func (r *RpcLogicServer) UploadPic(ctx context.Context, req *proto.UploadRequest
 		return response, errors.New("price can not be parse")
 	}
 	detail := req.Detail
+	school := req.School
 
 	//数据写数据库,包括物品信息,图片等
-	goodsId, err := dao.AddGoods(ctx, name, detail, price, uid, coverPath, fileUrlList)
+	goodsId, err := dao.AddGoods(ctx, name, detail, price, uid, school, coverPath, fileUrlList)
 	if err != nil {
 		return response, err
 	}
@@ -410,12 +411,12 @@ func (r *RpcLogicServer) GetGoods(ctx context.Context, req *proto.GetGoodsReques
 	for _, goods := range goodsList {
 		//增加到请求的商品列表
 		protoList = append(protoList, &proto.Goods{
-			Id:      goods.Id,
-			Name:    goods.Name,
-			Uname:   goods.Uname,
-			Price:   strconv.FormatFloat(goods.Price, 'f', 2, 32),
-			SellNum: goods.SellNum,
-			Cover:   goods.Cover,
+			Id:     goods.Id,
+			Name:   goods.Name,
+			Uname:  goods.Uname,
+			Price:  strconv.FormatFloat(goods.Price, 'f', 2, 32),
+			School: goods.School,
+			Cover:  goods.Cover,
 		})
 	}
 
@@ -443,7 +444,7 @@ func (r *RpcLogicServer) UserGoods(ctx context.Context, req *proto.GetUserGoodsL
 			Name:       l.Name,
 			Uname:      l.Uname,
 			Price:      strconv.FormatFloat(l.Price, 'f', 2, 32),
-			SellNum:    l.SellNum,
+			School:     l.School,
 			Detail:     l.Detail,
 			Cover:      l.Cover,
 			CreateTime: l.CreateTime.Unix(),
@@ -481,7 +482,7 @@ func (r *RpcLogicServer) GetGoodsPic(ctx context.Context, req *proto.GetGoodsDet
 		Name:       goods.Name,
 		Uname:      goods.Uname,
 		Price:      strconv.FormatFloat(goods.Price, 'f', 2, 32),
-		SellNum:    goods.SellNum,
+		School:     goods.School,
 		Detail:     goods.Detail,
 		Cover:      goods.Cover,
 		CreateTime: goods.CreateTime.Unix(),
@@ -511,7 +512,7 @@ func (r *RpcLogicServer) SearchGoods(ctx context.Context, req *proto.SearchGoods
 			Name:       l.Name,
 			Uname:      l.Uname,
 			Price:      strconv.FormatFloat(l.Price, 'f', 2, 32),
-			SellNum:    l.SellNum,
+			School:     l.School,
 			Detail:     l.Detail,
 			Cover:      l.Cover,
 			CreateTime: l.CreateTime.Unix(),
