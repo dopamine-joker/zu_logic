@@ -37,8 +37,8 @@ func InitRpcServer(serverId string) error {
 //createGrpcServer 创建rpc server
 func createGrpcServer(network, addr string, serverId string) {
 	grpcServer := grpc.NewServer(
-		grpc.MaxRecvMsgSize(8),
-		grpc.MaxSendMsgSize(8),
+		grpc.MaxRecvMsgSize(8*1024*1024),
+		grpc.MaxSendMsgSize(8*1024*1024),
 		grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()),
 		grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()),
 	)
