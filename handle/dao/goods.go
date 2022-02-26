@@ -143,7 +143,7 @@ func GetGoodsDetail(ctx context.Context, gid int32) (Goods, error) {
 	row := tx.QueryRowContext(ctx, `select zu.id as uid, zu.name as uname, zg.id, zg.name, zg.price, zg.sell_num, zg.detail, zg.cover, zg.create_time from z_user zu right join
     (select id, uid, name, price, sell_num, detail, cover, create_time from z_goods where id = ?) zg on zu.id = zg.uid`, gid)
 
-	if err = row.Scan(&goods.UserId, &goods.Uname, &goods.Id, &goods.Name, &goods.Price, &goods.Detail, &goods.Cover, &goods.CreateTime); err != nil {
+	if err = row.Scan(&goods.UserId, &goods.Uname, &goods.Id, &goods.Name, &goods.Price, &goods.SellNum, &goods.Detail, &goods.Cover, &goods.CreateTime); err != nil {
 		_ = tx.Rollback()
 		return Goods{}, err
 	}
