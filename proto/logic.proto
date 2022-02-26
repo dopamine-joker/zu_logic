@@ -57,6 +57,7 @@ message GoodsComment {
   int32 level = 6;
   int64 time = 7;
   string uname = 8;
+  string uface = 9;
 }
 
 message GetCommentByUserIdRequest {

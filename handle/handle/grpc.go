@@ -771,6 +771,7 @@ func (r *RpcLogicServer) GetCommentByGoodsId(ctx context.Context, req *proto.Get
 			Level:   comment.Level,
 			Time:    comment.TIme.Unix(),
 			Uname:   comment.UserName,
+			Uface:   comment.UserFace,
 		})
 	}
 	response.Code = misc.CodeSuccess
