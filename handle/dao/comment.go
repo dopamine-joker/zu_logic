@@ -34,18 +34,34 @@ type GoodsComment struct {
 
 //AddComment 增加一条评论
 func AddComment(ctx context.Context, userId, goodsId, oid, level int32, content string) (commentId int32, err error) {
-	res, err := db.SqlDb.ExecContext(ctx, `insert into z_comment(id, uid, gid, oid, content, level) 
+
+	tx, err := db.SqlDb.Begin()
+	if err != nil {
+		misc.Logger.Error("start transaction err", zap.Error(err))
+		return -1, err
+	}
+
+	res, err := tx.ExecContext(ctx, `insert into z_comment(id, uid, gid, oid, content, level) 
 values(null, ?, ?, ?, ?, ?)`, userId, goodsId, oid, content, level)
 	if err != nil {
+		_ = tx.Rollback()
 		misc.Logger.Error("insert a comment error", zap.Error(err))
 		return -1, err
 	}
 	commentId64, err := res.LastInsertId()
 	if err != nil {
+		_ = tx.Rollback()
 		misc.Logger.Error("get last insert id err", zap.Error(err))
 		return -1, err
 	}
 	commentId = int32(commentId64)
+
+	if _, err = tx.ExecContext(ctx, `update z_order set status = 4 where id = ?`, oid); err != nil {
+		misc.Logger.Error("update order err", zap.Error(err))
+		return -1, err
+	}
+
+	_ = tx.Commit()
 	return commentId, nil
 }
 
