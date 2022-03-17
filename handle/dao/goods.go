@@ -119,6 +119,20 @@ func DelGoods(ctx context.Context, gid int32) error {
 		return err
 	}
 
+	//删除有关评论
+	if _, err = tx.ExecContext(ctx, `delete from z_comment where gid = ?`, gid); err != nil {
+		_ = tx.Rollback()
+		misc.Logger.Error("delete goods comment err", zap.Error(err))
+		return err
+	}
+
+	//删除收藏
+	if _, err = tx.ExecContext(ctx, `delete from z_favorites where gid = ?`, gid); err != nil {
+		_ = tx.Rollback()
+		misc.Logger.Error("delete goods favorites err", zap.Error(err))
+		return err
+	}
+
 	if err = tx.Commit(); err != nil {
 		_ = tx.Rollback()
 		misc.Logger.Error("commit tx err", zap.Error(err))
