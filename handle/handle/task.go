@@ -78,7 +78,7 @@ func consumeUpdate(ctx context.Context, msg string) error {
 		return err
 	}
 	misc.Logger.Info("push msg info", zap.Any("RedisMsg", m), zap.Any("redisOrder", m))
-	err := dao.UpdateOrder(ctx, m.OrderId, m.Status)
+	err := dao.UpdateOrder(ctx, m.OrderId, m.UserId, m.Status)
 	misc.Logger.Info("update order to sql", zap.Int32("orderId", m.OrderId), zap.Int32("status", int32(m.Status)))
 	if err != nil {
 		return err

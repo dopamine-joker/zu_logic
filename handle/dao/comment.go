@@ -91,8 +91,8 @@ func GetCommentByGoodsId(ctx context.Context, gid int32) ([]GoodsComment, error)
 }
 
 //DeleteComment 删除评论
-func DeleteComment(ctx context.Context, commentId int32) error {
-	if _, err := db.SqlDb.ExecContext(ctx, `delete from z_comment where id = ?`, commentId); err != nil {
+func DeleteComment(ctx context.Context, commentId int32, userId int32) error {
+	if _, err := db.SqlDb.ExecContext(ctx, `delete from z_comment where id = ? and uid = ?`, commentId, userId); err != nil {
 		misc.Logger.Error("delete comment err", zap.Error(err))
 		return err
 	}

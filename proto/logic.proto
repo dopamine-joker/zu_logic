@@ -32,7 +32,8 @@ service RpcLogicService {
 }
 
 message DeleteCommentRequest{
-  int32 cid = 1;
+  int32 uid = 1;
+  int32 cid = 2;
 }
 
 message DeleteCommentResponse {
@@ -114,7 +115,8 @@ message UserFavorites {
 }
 
 message DeleteFavoritesRequest {
-  int32 fid = 1;
+  int32 uid = 1;
+  int32 fid = 2;
 }
 
 message DeleteFavoritesResponse {
@@ -156,7 +158,8 @@ message UpdateUserResponse {
 
 message UpdateOrderRequest {
   int32 id = 1;
-  int32 status = 2;
+  int32 uid = 2;
+  int32 status = 3;
 }
 
 message UpdateOrderResponse {
@@ -164,7 +167,8 @@ message UpdateOrderResponse {
 }
 
 message DeleteGoodsRequest {
-  int32 gid = 1;
+  int32 uid = 1;
+  int32 gid = 2;
 }
 
 message DeleteGoodsResponse {

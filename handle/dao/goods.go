@@ -96,7 +96,7 @@ func GetGoods(ctx context.Context, page, count int32) ([]Goods, error) {
 }
 
 //DelGoods 删除货物
-func DelGoods(ctx context.Context, gid int32) error {
+func DelGoods(ctx context.Context, gid int32, uid int32) error {
 	var err error
 
 	tx, err := db.SqlDb.Begin()
@@ -106,7 +106,7 @@ func DelGoods(ctx context.Context, gid int32) error {
 	}
 
 	//删除货物
-	if _, err = tx.ExecContext(ctx, `delete from z_goods where id = ?`, gid); err != nil {
+	if _, err = tx.ExecContext(ctx, `delete from z_goods where id = ? and uid = ?`, gid, uid); err != nil {
 		_ = tx.Rollback()
 		misc.Logger.Error("delete goods err", zap.Error(err))
 		return err

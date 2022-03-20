@@ -385,7 +385,7 @@ func (r *RpcLogicServer) DeleteGoods(ctx context.Context, req *proto.DeleteGoods
 	response := &proto.DeleteGoodsResponse{
 		Code: misc.CodeFail,
 	}
-	err := dao.DelGoods(ctx, req.Gid)
+	err := dao.DelGoods(ctx, req.Gid, req.Uid)
 	if err != nil {
 		return response, err
 	}
@@ -676,7 +676,7 @@ func (r *RpcLogicServer) DeleteFavorites(ctx context.Context, req *proto.DeleteF
 	response := &proto.DeleteFavoritesResponse{
 		Code: misc.CodeFail,
 	}
-	if err := dao.DeleteFavorites(ctx, req.Fid); err != nil {
+	if err := dao.DeleteFavorites(ctx, req.Fid, req.Uid); err != nil {
 		return response, err
 	}
 	response.Code = misc.CodeSuccess
@@ -783,7 +783,7 @@ func (r *RpcLogicServer) DeleteComment(ctx context.Context, req *proto.DeleteCom
 	response := &proto.DeleteCommentResponse{
 		Code: misc.CodeFail,
 	}
-	if err := dao.DeleteComment(ctx, req.Cid); err != nil {
+	if err := dao.DeleteComment(ctx, req.Cid, req.Uid); err != nil {
 		misc.Logger.Error("delete comment err", zap.Error(err))
 		return response, err
 	}

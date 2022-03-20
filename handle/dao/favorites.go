@@ -34,8 +34,8 @@ func AddFavorites(ctx context.Context, uid, gid int32) (int32, error) {
 	return fid32, nil
 }
 
-func DeleteFavorites(ctx context.Context, fid int32) error {
-	if _, err := db.SqlDb.ExecContext(ctx, `delete from z_favorites where id = ?`, fid); err != nil {
+func DeleteFavorites(ctx context.Context, fid int32, uid int32) error {
+	if _, err := db.SqlDb.ExecContext(ctx, `delete from z_favorites where id = ? and uid = ?`, fid, uid); err != nil {
 		misc.Logger.Error("delete favorites err", zap.Error(err))
 		return err
 	}

@@ -35,6 +35,7 @@ type RedisOrderAdd struct {
 
 type RedisOrderUpdate struct {
 	OrderId int32
+	UserId  int32
 	Status  OrderStatus
 }
 
@@ -113,9 +114,9 @@ where t2.gid = g.id;`, sellid); err != nil {
 }
 
 //UpdateOrder 更新订单
-func UpdateOrder(ctx context.Context, id int32, status OrderStatus) error {
+func UpdateOrder(ctx context.Context, id int32, userId int32, status OrderStatus) error {
 	var err error
-	if _, err = db.SqlDb.ExecContext(ctx, `update z_order set status = ? where id = ?`, int32(status), id); err != nil {
+	if _, err = db.SqlDb.ExecContext(ctx, `update z_order set status = ? where id = ? amd (buyid = ? or sellid = ?)`, int32(status), id, userId, userId); err != nil {
 		misc.Logger.Error("update order err", zap.Error(err))
 		return err
 	}
