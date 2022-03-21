@@ -15,6 +15,7 @@ type UserFavorites struct {
 	GId   int32   `json:"gid" db:"gid"`
 	Name  string  `json:"name" db:"name"`
 	Price float64 `json:"price" db:"price"`
+	Type  int32   `json:"type" db:"type"`
 	Cover string  `json:"cover" db:"cover"`
 }
 

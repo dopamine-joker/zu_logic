@@ -585,6 +585,7 @@ func (r *RpcLogicServer) GetBuyOrder(ctx context.Context, req *proto.GetBuyOrder
 			Gname:    o.GName,
 			School:   o.School,
 			Price:    strconv.FormatFloat(o.Price, 'f', 2, 32),
+			Type:     o.Type,
 			Cover:    o.Cover,
 			Status:   o.Status,
 			Time:     o.Time.Unix(),
@@ -619,6 +620,7 @@ func (r *RpcLogicServer) GetSellOrder(ctx context.Context, req *proto.GetSellOrd
 			Gname:    o.GName,
 			School:   o.School,
 			Price:    strconv.FormatFloat(o.Price, 'f', 2, 32),
+			Type:     o.Type,
 			Cover:    o.Cover,
 			Status:   o.Status,
 			Time:     o.Time.Unix(),
@@ -706,6 +708,7 @@ func (r *RpcLogicServer) GetUserFavorites(ctx context.Context, req *proto.GetUse
 			Gid:   favorites.GId,
 			Name:  favorites.Name,
 			Price: strconv.FormatFloat(favorites.Price, 'f', 2, 32),
+			Type:  favorites.Type,
 			Cover: favorites.Cover,
 		})
 	}
