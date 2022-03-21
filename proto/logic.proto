@@ -253,10 +253,11 @@ message GoodsDetail {
   string name = 3;
   string uname = 4;
   string price = 5;
-  string school  = 6;
-  string detail = 7;
-  string cover = 8;
-  int64 create_time = 9;
+  int32 type = 6;
+  string school  = 7;
+  string detail = 8;
+  string cover = 9;
+  int64 create_time = 10;
 }
 
 message Pic {
@@ -279,8 +280,9 @@ message Goods {
   string Name = 2;  //商品名称
   string Uname = 3; //商家名称
   string Price = 4; //价格
-  string school = 5;
-  string Cover = 6; //封面url
+  int32 type = 6;
+  string school = 7;
+  string Cover = 8; //封面url
 }
 
 message User {
@@ -297,10 +299,11 @@ message UploadRequest {
   int32 Uid = 1;
   string Name = 2;
   string Price = 3;
-  string school = 4;
-  string detail = 5;
-  FileStream cover = 6;
-  repeated FileStream picList = 7;
+  int32 type = 5;
+  string school = 6;
+  string detail = 7;
+  FileStream cover = 8;
+  repeated FileStream picList = 9;
 }
 
 message UploadFaceRequest {

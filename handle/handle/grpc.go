@@ -367,9 +367,10 @@ func (r *RpcLogicServer) UploadPic(ctx context.Context, req *proto.UploadRequest
 	}
 	detail := req.Detail
 	school := req.School
+	gType := req.Type
 
 	//数据写数据库,包括物品信息,图片等
-	goodsId, err := dao.AddGoods(ctx, name, detail, price, uid, school, coverPath, fileUrlList)
+	goodsId, err := dao.AddGoods(ctx, name, detail, price, gType, uid, school, coverPath, fileUrlList)
 	if err != nil {
 		return response, err
 	}
@@ -415,6 +416,7 @@ func (r *RpcLogicServer) GetGoods(ctx context.Context, req *proto.GetGoodsReques
 			Name:   goods.Name,
 			Uname:  goods.Uname,
 			Price:  strconv.FormatFloat(goods.Price, 'f', 2, 32),
+			Type:   goods.GType,
 			School: goods.School,
 			Cover:  goods.Cover,
 		})
@@ -444,6 +446,7 @@ func (r *RpcLogicServer) UserGoods(ctx context.Context, req *proto.GetUserGoodsL
 			Name:       l.Name,
 			Uname:      l.Uname,
 			Price:      strconv.FormatFloat(l.Price, 'f', 2, 32),
+			Type:       l.GType,
 			School:     l.School,
 			Detail:     l.Detail,
 			Cover:      l.Cover,
@@ -482,6 +485,7 @@ func (r *RpcLogicServer) GetGoodsPic(ctx context.Context, req *proto.GetGoodsDet
 		Name:       goods.Name,
 		Uname:      goods.Uname,
 		Price:      strconv.FormatFloat(goods.Price, 'f', 2, 32),
+		Type:       goods.GType,
 		School:     goods.School,
 		Detail:     goods.Detail,
 		Cover:      goods.Cover,
@@ -512,6 +516,7 @@ func (r *RpcLogicServer) SearchGoods(ctx context.Context, req *proto.SearchGoods
 			Name:       l.Name,
 			Uname:      l.Uname,
 			Price:      strconv.FormatFloat(l.Price, 'f', 2, 32),
+			Type:       l.GType,
 			School:     l.School,
 			Detail:     l.Detail,
 			Cover:      l.Cover,
@@ -634,6 +639,7 @@ func (r *RpcLogicServer) UpdateOrder(ctx context.Context, req *proto.UpdateOrder
 
 	redisOrder := dao.RedisOrderUpdate{
 		OrderId: req.Id,
+		UserId:  req.Uid,
 		Status:  status,
 	}
 	orderUpdateMsg, err := json.Marshal(redisOrder)
