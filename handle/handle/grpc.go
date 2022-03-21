@@ -204,7 +204,7 @@ func (r *RpcLogicServer) CheckAuth(ctx context.Context, request *proto.CheckAuth
 	}
 	tokenId := request.GetAuthToken()
 	userDataMap, err := db.RedisClient.HGetAll(ctx, tokenId).Result()
-	if err != nil {
+	if err != nil || userDataMap == nil || len(userDataMap) == 0 {
 		misc.Logger.Error("check auth fail", zap.String("token", tokenId))
 		return response, err
 	}
