@@ -1,4 +1,4 @@
-syntax = "proto3";
+ syntax = "proto3";
 
 option go_package = "github.com/dopamine-joker/zu_logic/proto";
 package proto;
@@ -111,7 +111,8 @@ message UserFavorites {
   int32 gid = 3;
   string name = 4;
   string price = 5;
-  string cover = 6;
+  int32 type = 6;
+  string cover = 7;
 }
 
 message DeleteFavoritesRequest {
@@ -203,9 +204,10 @@ message Order {
   string Gname = 7;
   string School = 8;
   string price = 9;
-  string cover = 10;
-  int32 status = 11;
-  int64 time = 12;
+  int32 type = 10;
+  string cover = 11;
+  int32 status = 12;
+  int64 time = 13;
 }
 
 message AddOrderRequest {

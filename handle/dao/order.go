@@ -20,6 +20,7 @@ type Order struct {
 	GName        string    `json:"gname" db:"gname"`
 	School       string    `json:"school" db:"school"`
 	Price        float64   `json:"price" db:"price"`
+	Type         int32     `json:"type" db:"type"`
 	Cover        string    `json:"cover" db:"cover"`
 	Status       int32     `json:"status" db:"status"`
 	Time         time.Time `json:"time" db:"time"`
@@ -85,7 +86,7 @@ func AddOrder(ctx context.Context, buyid, sellid, gid int32, school string, stat
 func GetBuyOrder(ctx context.Context, buyid int32) ([]Order, error) {
 	var list []Order
 	var err error
-	if err = db.SqlDb.SelectContext(ctx, &list, `select t2.*, name as gname, price, cover from z_goods as g join 
+	if err = db.SqlDb.SelectContext(ctx, &list, `select t2.*, name as gname, price, type, cover from z_goods as g join 
     (select t.*, name as sname from z_user as u2 join 
         (select o.*, u.name as bname from z_order as o join 
             (select id, name from z_user where id = ?) as u where o.buyid = u.id) as t 
@@ -101,7 +102,7 @@ where t2.gid = g.id;`, buyid); err != nil {
 func GetSellOrder(ctx context.Context, sellid int32) ([]Order, error) {
 	var list []Order
 	var err error
-	if err = db.SqlDb.SelectContext(ctx, &list, `select t2.*, name as gname, price, cover from z_goods as g join 
+	if err = db.SqlDb.SelectContext(ctx, &list, `select t2.*, name as gname, price, type, cover from z_goods as g join 
     (select t.*, name as bname from z_user as u2 join 
         (select o.*, u.name as sname from z_order as o join 
             (select id, name from z_user where id = ?) as u 
@@ -116,7 +117,7 @@ where t2.gid = g.id;`, sellid); err != nil {
 //UpdateOrder 更新订单
 func UpdateOrder(ctx context.Context, id int32, userId int32, status OrderStatus) error {
 	var err error
-	if _, err = db.SqlDb.ExecContext(ctx, `update z_order set status = ? where id = ? amd (buyid = ? or sellid = ?)`, int32(status), id, userId, userId); err != nil {
+	if _, err = db.SqlDb.ExecContext(ctx, `update z_order set status = ? where id = ? and (buyid = ? or sellid = ?)`, int32(status), id, userId, userId); err != nil {
 		misc.Logger.Error("update order err", zap.Error(err))
 		return err
 	}
