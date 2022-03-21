@@ -45,7 +45,7 @@ func DeleteFavorites(ctx context.Context, fid int32, uid int32) error {
 func GetUserFavorites(ctx context.Context, uid int32) ([]UserFavorites, error) {
 	var userFavoritesList []UserFavorites
 	var err error
-	if err = db.SqlDb.SelectContext(ctx, &userFavoritesList, `select zf.id, zf.uid, zf.gid, zg.name, zg.price, zg.cover from z_goods zg 
+	if err = db.SqlDb.SelectContext(ctx, &userFavoritesList, `select zf.id, zf.uid, zf.gid, zg.name, zg.price, zg.type, zg.cover from z_goods zg 
 		right join (select * from z_favorites where uid = ?) zf on zg.id = zf.gid`, uid); err != nil {
 		misc.Logger.Error("get favorites list err", zap.Error(err))
 		return nil, err
